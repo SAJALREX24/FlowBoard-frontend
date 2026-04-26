@@ -1,0 +1,77 @@
+﻿<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-8">
+  <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-indigo-600">FlowBoard</h1>
+      <p class="text-gray-500 mt-2">Create your account</p>
+    </div>
+
+    <form (submit)="onSubmit(); $event.preventDefault()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+        <input
+          type="text"
+          [(ngModel)]="fullNameField"
+          name="fullName"
+          [disabled]="isLoading"
+          placeholder="Jane Smith"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+        <input
+          type="text"
+          [(ngModel)]="usernameField"
+          name="username"
+          [disabled]="isLoading"
+          placeholder="janesmith"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input
+          type="email"
+          [(ngModel)]="emailField"
+          name="email"
+          [disabled]="isLoading"
+          placeholder="you@example.com"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+        <input
+          type="password"
+          [(ngModel)]="passwordField"
+          name="password"
+          [disabled]="isLoading"
+          placeholder="At least 8 characters"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        />
+      </div>
+
+      <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg text-sm">
+        {{ errorMessage }}
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="isLoading"
+        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition disabled:bg-indigo-300 disabled:cursor-not-allowed"
+      >
+        <span *ngIf="!isLoading">Create Account</span>
+        <span *ngIf="isLoading">Creating account...</span>
+      </button>
+    </form>
+
+    <p class="text-center text-sm text-gray-600 mt-6">
+      Already have an account?
+      <a routerLink="/login" class="text-indigo-600 hover:text-indigo-700 font-medium">Sign in</a>
+    </p>
+  </div>
+</div>
+
