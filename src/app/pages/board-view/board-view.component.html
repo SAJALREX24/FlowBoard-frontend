@@ -1,0 +1,124 @@
+<div class="min-h-screen flex flex-col" [class]="board ? getColorClass(board.backgroundColor) : 'bg-gray-100'">
+  <!-- Header -->
+  <header class="bg-white border-b border-gray-200 px-6 py-4">
+    <div class="max-w-screen-2xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-bold text-indigo-600 cursor-pointer" (click)="logout()">FlowBoard</h1>
+        <span class="text-gray-300">/</span>
+        <button (click)="backToBoards()" class="text-sm text-gray-600 hover:text-indigo-600">Boards</button>
+        <span class="text-gray-300">/</span>
+        <span class="text-sm text-gray-700 font-medium">{{ board?.name || '...' }}</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-gray-600">{{ currentUserName }}</span>
+        <button (click)="logout()" class="text-sm text-gray-600 hover:text-gray-900 font-medium">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Loading / error states -->
+  <div *ngIf="isLoading" class="flex-1 flex items-center justify-center text-white text-lg">Loading board...</div>
+  <div *ngIf="errorMessage && !isLoading" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg m-6">{{ errorMessage }}</div>
+
+  <!-- Kanban columns -->
+  <main *ngIf="!isLoading && !errorMessage" class="flex-1 overflow-x-auto p-6">
+    <div class="flex items-start gap-4 min-h-full">
+
+      <!-- Each list/column -->
+      <div *ngFor="let column of columns" class="flex-shrink-0 w-72 bg-gray-100 rounded-xl shadow-sm">
+        <div class="px-4 py-3 border-b border-gray-200">
+          <h3 class="font-semibold text-gray-700 text-sm">{{ column.list.name }}</h3>
+          <span class="text-xs text-gray-400">{{ column.cards.length }} cards</span>
+        </div>
+
+        <!-- Cards container with drag-drop -->
+        <div
+          cdkDropList
+          [id]="'list-' + column.list.listId"
+          [cdkDropListData]="column.cards"
+          [cdkDropListConnectedTo]="connectedListIds"
+          (cdkDropListDropped)="onCardDrop($event)"
+          class="p-2 space-y-2 min-h-[40px]"
+        >
+          <div
+            *ngFor="let card of column.cards"
+            cdkDrag
+            class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 cursor-grab hover:shadow-md transition active:cursor-grabbing"
+          >
+            <div *ngIf="card.coverColor" [class]="getColorClass(card.coverColor) + ' h-2 -mx-3 -mt-3 mb-2 rounded-t-lg'"></div>
+            <h4 class="text-sm font-medium text-gray-900 mb-2">{{ card.title }}</h4>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span *ngIf="card.priority" class="text-xs px-2 py-0.5 rounded-full" [class]="getPriorityClass(card.priority)">
+                {{ card.priority }}
+              </span>
+              <span *ngIf="card.dueDate" class="text-xs text-gray-500">
+                📅 {{ card.dueDate | date:'MMM d' }}
+              </span>
+              <span *ngIf="card.assigneeId" class="text-xs text-gray-500">
+                👤 User {{ card.assigneeId }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add card section -->
+        <div class="p-2">
+          <div *ngIf="addingCardToListId !== column.list.listId">
+            <button (click)="startAddingCard(column.list.listId)" class="w-full text-left text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-lg transition">
+              + Add a card
+            </button>
+          </div>
+          <div *ngIf="addingCardToListId === column.list.listId" class="space-y-2">
+            <textarea
+              [(ngModel)]="newCardTitle"
+              rows="2"
+              placeholder="Enter card title..."
+              class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            ></textarea>
+            <div class="flex gap-2">
+              <button
+                (click)="addCard(column.list.listId)"
+                [disabled]="isAddingCard || !newCardTitle.trim()"
+                class="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white text-sm px-3 py-1.5 rounded-md font-medium"
+              >
+                Add Card
+              </button>
+              <button (click)="cancelAddingCard()" class="text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add new list -->
+      <div class="flex-shrink-0 w-72">
+        <div *ngIf="!showAddList">
+          <button (click)="showAddList = true" class="w-full bg-white/30 hover:bg-white/40 text-white px-4 py-3 rounded-xl font-medium transition">
+            + Add another list
+          </button>
+        </div>
+        <div *ngIf="showAddList" class="bg-gray-100 rounded-xl shadow-sm p-3 space-y-2">
+          <input
+            type="text"
+            [(ngModel)]="newListName"
+            placeholder="Enter list name..."
+            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          />
+          <div class="flex gap-2">
+            <button
+              (click)="addList()"
+              [disabled]="isAddingList || !newListName.trim()"
+              class="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white text-sm px-3 py-1.5 rounded-md font-medium"
+            >
+              Add List
+            </button>
+            <button (click)="showAddList = false; newListName = ''" class="text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

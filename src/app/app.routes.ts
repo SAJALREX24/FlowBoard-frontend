@@ -19,6 +19,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/boards/boards.component').then(m => m.BoardsComponent)
   },
   {
+    path: 'boards/:boardId',
+    loadComponent: () => import('./pages/board-view/board-view.component').then(m => m.BoardViewComponent)
+  },
+  {
     path: '**',
     redirectTo: '/login'
   }
