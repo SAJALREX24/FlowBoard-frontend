@@ -8,10 +8,17 @@ import { AuthService } from '../../core/auth.service';
 import { BoardService, Board } from '../../core/board.service';
 import { ListService, BoardList, CreateListRequest } from '../../core/list.service';
 import { CardService, Card, CreateCardRequest, MoveCardRequest } from '../../core/card.service';
+import { BoardMemberService, BoardMember } from '../../core/board-member.service';
+import { UserService, UserSummary } from '../../core/user.service';
 
 interface ListWithCards {
   list: BoardList;
   cards: Card[];
+}
+
+interface MemberWithUser {
+  member: BoardMember;
+  user: UserSummary | null;
 }
 
 @Component({
@@ -30,15 +37,25 @@ export class BoardViewComponent implements OnInit {
   currentUserName = '';
   currentUserId = 0;
 
-  // Add list form
   showAddList = false;
   newListName = '';
   isAddingList = false;
 
-  // Add card per-list state
   addingCardToListId: number | null = null;
   newCardTitle = '';
   isAddingCard = false;
+
+  // Members modal state
+  showMembers = false;
+  members: MemberWithUser[] = [];
+  isLoadingMembers = false;
+  inviteEmail = '';
+  inviteRole = 'MEMBER';
+  isInviting = false;
+  inviteMessage = '';
+  inviteError = '';
+
+  readonly roles = ['OBSERVER', 'MEMBER', 'ADMIN'];
 
   constructor(
     private route: ActivatedRoute,
@@ -46,7 +63,9 @@ export class BoardViewComponent implements OnInit {
     private authService: AuthService,
     private boardService: BoardService,
     private listService: ListService,
-    private cardService: CardService
+    private cardService: CardService,
+    private memberService: BoardMemberService,
+    private userService: UserService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -151,16 +170,13 @@ export class BoardViewComponent implements OnInit {
     }
   }
 
-  // Drag-drop handler — used by both same-list reorder and cross-list move
   async onCardDrop(event: CdkDragDrop<Card[]>): Promise<void> {
     const fromListId = Number(event.previousContainer.id.replace('list-', ''));
     const toListId = Number(event.container.id.replace('list-', ''));
 
     if (event.previousContainer === event.container) {
-      // Same-list reorder
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
-      // Cross-list move
       transferArrayItem(
         event.previousContainer.data,
         event.container.data,
@@ -181,12 +197,10 @@ export class BoardViewComponent implements OnInit {
       movedCard.position = newPosition;
     } catch (error) {
       console.error('Failed to move card:', error);
-      // On failure, reload the whole board to recover
       await this.loadBoard();
     }
   }
 
-  // Compute a position between neighbors using fractional positioning
   private calculateNewPosition(cards: Card[], index: number): number {
     const prev = index > 0 ? cards[index - 1].position : 0;
     const next = index < cards.length - 1 ? cards[index + 1].position : prev + 200;
@@ -229,5 +243,107 @@ export class BoardViewComponent implements OnInit {
       'URGENT': 'bg-red-100 text-red-700'
     };
     return map[priority || ''] || 'bg-gray-100 text-gray-700';
+  }
+
+  // ===== Members =====
+  async openMembers(): Promise<void> {
+    this.showMembers = true;
+    await this.loadMembers();
+  }
+
+  closeMembers(): void {
+    this.showMembers = false;
+    this.inviteEmail = '';
+    this.inviteRole = 'MEMBER';
+    this.inviteMessage = '';
+    this.inviteError = '';
+  }
+
+  async loadMembers(): Promise<void> {
+    this.isLoadingMembers = true;
+    try {
+      const memberList = await this.memberService.getMembers(this.boardId);
+      const enriched: MemberWithUser[] = await Promise.all(
+        memberList.map(async (m) => {
+          let userInfo: UserSummary | null = null;
+          try {
+            userInfo = await this.userService.findById(m.userId);
+          } catch (err) {
+            console.error('Failed to load user', m.userId, err);
+          }
+          return { member: m, user: userInfo };
+        })
+      );
+      this.members = enriched;
+    } catch (error) {
+      console.error('Failed to load members:', error);
+    } finally {
+      this.isLoadingMembers = false;
+    }
+  }
+
+  async invite(): Promise<void> {
+    const trimmedEmail = this.inviteEmail.trim();
+    if (!trimmedEmail) return;
+
+    this.isInviting = true;
+    this.inviteMessage = '';
+    this.inviteError = '';
+
+    try {
+      const foundUser = await this.userService.findByEmail(trimmedEmail);
+      if (!foundUser) {
+        this.inviteError = `No user found with email ${trimmedEmail}.`;
+        return;
+      }
+
+      if (this.members.some(m => m.member.userId === foundUser.userId)) {
+        this.inviteError = `${foundUser.fullName} is already a member.`;
+        return;
+      }
+
+      await this.memberService.addMember(this.boardId, {
+        userId: foundUser.userId,
+        role: this.inviteRole
+      });
+
+      this.inviteMessage = `Added ${foundUser.fullName} as ${this.inviteRole}.`;
+      this.inviteEmail = '';
+      await this.loadMembers();
+    } catch (error: any) {
+      console.error('Invite failed:', error);
+      if (error.status === 409) {
+        this.inviteError = 'User is already a member of this board.';
+      } else {
+        this.inviteError = 'Failed to add member. Please try again.';
+      }
+    } finally {
+      this.isInviting = false;
+    }
+  }
+
+  async changeRole(member: MemberWithUser, newRole: string): Promise<void> {
+    try {
+      await this.memberService.updateRole(this.boardId, member.member.userId, { role: newRole });
+      member.member.role = newRole;
+    } catch (error) {
+      console.error('Failed to change role:', error);
+    }
+  }
+
+  async removeMember(member: MemberWithUser): Promise<void> {
+    if (member.member.userId === this.currentUserId) {
+      this.inviteError = "You can't remove yourself.";
+      return;
+    }
+    const userName = member.user?.fullName || `User ${member.member.userId}`;
+    if (!confirm(`Remove ${userName} from this board?`)) return;
+
+    try {
+      await this.memberService.removeMember(this.boardId, member.member.userId);
+      this.members = this.members.filter(m => m.member.userId !== member.member.userId);
+    } catch (error) {
+      console.error('Failed to remove member:', error);
+    }
   }
 }

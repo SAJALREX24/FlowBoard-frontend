@@ -1,5 +1,4 @@
 <div class="min-h-screen flex flex-col" [class]="board ? getColorClass(board.backgroundColor) : 'bg-gray-100'">
-  <!-- Header -->
   <header class="bg-white border-b border-gray-200 px-6 py-4">
     <div class="max-w-screen-2xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -9,29 +8,28 @@
         <span class="text-gray-300">/</span>
         <span class="text-sm text-gray-700 font-medium">{{ board?.name || '...' }}</span>
       </div>
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3">
+        <button (click)="openMembers()" class="bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium transition">
+          👥 Members
+        </button>
         <span class="text-sm text-gray-600">{{ currentUserName }}</span>
         <button (click)="logout()" class="text-sm text-gray-600 hover:text-gray-900 font-medium">Logout</button>
       </div>
     </div>
   </header>
 
-  <!-- Loading / error states -->
   <div *ngIf="isLoading" class="flex-1 flex items-center justify-center text-white text-lg">Loading board...</div>
   <div *ngIf="errorMessage && !isLoading" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg m-6">{{ errorMessage }}</div>
 
-  <!-- Kanban columns -->
   <main *ngIf="!isLoading && !errorMessage" class="flex-1 overflow-x-auto p-6">
     <div class="flex items-start gap-4 min-h-full">
 
-      <!-- Each list/column -->
       <div *ngFor="let column of columns" class="flex-shrink-0 w-72 bg-gray-100 rounded-xl shadow-sm">
         <div class="px-4 py-3 border-b border-gray-200">
           <h3 class="font-semibold text-gray-700 text-sm">{{ column.list.name }}</h3>
           <span class="text-xs text-gray-400">{{ column.cards.length }} cards</span>
         </div>
 
-        <!-- Cards container with drag-drop -->
         <div
           cdkDropList
           [id]="'list-' + column.list.listId"
@@ -61,7 +59,6 @@
           </div>
         </div>
 
-        <!-- Add card section -->
         <div class="p-2">
           <div *ngIf="addingCardToListId !== column.list.listId">
             <button (click)="startAddingCard(column.list.listId)" class="w-full text-left text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-lg transition">
@@ -91,7 +88,6 @@
         </div>
       </div>
 
-      <!-- Add new list -->
       <div class="flex-shrink-0 w-72">
         <div *ngIf="!showAddList">
           <button (click)="showAddList = true" class="w-full bg-white/30 hover:bg-white/40 text-white px-4 py-3 rounded-xl font-medium transition">
@@ -121,4 +117,85 @@
       </div>
     </div>
   </main>
+
+  <!-- Members Modal -->
+  <div *ngIf="showMembers" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="closeMembers()">
+    <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
+      <div class="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-900">Board Members</h2>
+        <button (click)="closeMembers()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+      </div>
+
+      <div class="p-6 space-y-6">
+        <div class="bg-gray-50 rounded-xl p-4">
+          <h3 class="text-sm font-semibold text-gray-900 mb-3">Invite by Email</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+            <input
+              type="email"
+              [(ngModel)]="inviteEmail"
+              [disabled]="isInviting"
+              placeholder="user-email-here"
+              class="md:col-span-2 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
+            <select
+              [(ngModel)]="inviteRole"
+              [disabled]="isInviting"
+              class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            >
+              <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+            </select>
+          </div>
+          <button
+            (click)="invite()"
+            [disabled]="isInviting || !inviteEmail.trim()"
+            class="mt-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white text-sm px-4 py-2 rounded-lg font-medium"
+          >
+            {{ isInviting ? 'Adding...' : 'Add Member' }}
+          </button>
+
+          <p *ngIf="inviteMessage" class="mt-2 text-sm text-green-700">{{ inviteMessage }}</p>
+          <p *ngIf="inviteError" class="mt-2 text-sm text-red-700">{{ inviteError }}</p>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-semibold text-gray-900 mb-3">
+            Current Members ({{ members.length }})
+          </h3>
+          <div *ngIf="isLoadingMembers" class="text-sm text-gray-500">Loading...</div>
+
+          <div *ngIf="!isLoadingMembers" class="space-y-2">
+            <div
+              *ngFor="let m of members"
+              class="flex items-center justify-between bg-white border border-gray-200 rounded-lg px-4 py-3"
+            >
+              <div>
+                <div class="font-medium text-gray-900 text-sm">
+                  {{ m.user?.fullName || ('User ' + m.member.userId) }}
+                  <span *ngIf="m.member.userId === currentUserId" class="text-xs text-gray-400">(you)</span>
+                </div>
+                <div class="text-xs text-gray-500">{{ m.user?.email || '' }}</div>
+              </div>
+              <div class="flex items-center gap-2">
+                <select
+                  [ngModel]="m.member.role"
+                  (ngModelChange)="changeRole(m, $event)"
+                  [disabled]="m.member.userId === currentUserId"
+                  class="text-xs px-2 py-1 border border-gray-300 rounded-md"
+                >
+                  <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+                </select>
+                <button
+                  *ngIf="m.member.userId !== currentUserId"
+                  (click)="removeMember(m)"
+                  class="text-xs text-red-600 hover:text-red-800"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

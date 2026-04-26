@@ -5,6 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
 import { WorkspaceService, Workspace } from '../../core/workspace.service';
 import { BoardService, Board, CreateBoardRequest } from '../../core/board.service';
+import { WorkspaceMemberService, WorkspaceMember } from '../../core/workspace-member.service';
+import { UserService, UserSummary } from '../../core/user.service';
+
+interface MemberWithUser {
+  member: WorkspaceMember;
+  user: UserSummary | null;
+}
 
 @Component({
   selector: 'app-boards',
@@ -31,12 +38,26 @@ export class BoardsComponent implements OnInit {
 
   readonly colors = ['BLUE', 'GREEN', 'PURPLE', 'ORANGE', 'RED', 'GRAY'];
 
+  // Members modal state
+  showMembers = false;
+  members: MemberWithUser[] = [];
+  isLoadingMembers = false;
+  inviteEmail = '';
+  inviteRole = 'MEMBER';
+  isInviting = false;
+  inviteMessage = '';
+  inviteError = '';
+
+  readonly roles = ['OBSERVER', 'MEMBER', 'ADMIN'];
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
     private workspaceService: WorkspaceService,
-    private boardService: BoardService
+    private boardService: BoardService,
+    private memberService: WorkspaceMemberService,
+    private userService: UserService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -91,7 +112,6 @@ export class BoardsComponent implements OnInit {
 
   async createBoard(): Promise<void> {
     if (!this.newName.trim()) return;
-
     this.isCreating = true;
     try {
       const request: CreateBoardRequest = {
@@ -135,5 +155,107 @@ export class BoardsComponent implements OnInit {
       'GRAY': 'bg-gray-500'
     };
     return map[color || 'GRAY'] || 'bg-gray-500';
+  }
+
+  // ===== Members =====
+  async openMembers(): Promise<void> {
+    this.showMembers = true;
+    await this.loadMembers();
+  }
+
+  closeMembers(): void {
+    this.showMembers = false;
+    this.inviteEmail = '';
+    this.inviteRole = 'MEMBER';
+    this.inviteMessage = '';
+    this.inviteError = '';
+  }
+
+  async loadMembers(): Promise<void> {
+    this.isLoadingMembers = true;
+    try {
+      const memberList = await this.memberService.getMembers(this.workspaceId);
+      const enriched: MemberWithUser[] = await Promise.all(
+        memberList.map(async (m) => {
+          let userInfo: UserSummary | null = null;
+          try {
+            userInfo = await this.userService.findById(m.userId);
+          } catch (err) {
+            console.error('Failed to load user', m.userId, err);
+          }
+          return { member: m, user: userInfo };
+        })
+      );
+      this.members = enriched;
+    } catch (error) {
+      console.error('Failed to load members:', error);
+    } finally {
+      this.isLoadingMembers = false;
+    }
+  }
+
+  async invite(): Promise<void> {
+    const trimmedEmail = this.inviteEmail.trim();
+    if (!trimmedEmail) return;
+
+    this.isInviting = true;
+    this.inviteMessage = '';
+    this.inviteError = '';
+
+    try {
+      const foundUser = await this.userService.findByEmail(trimmedEmail);
+      if (!foundUser) {
+        this.inviteError = `No user found with email ${trimmedEmail}. They need to register first.`;
+        return;
+      }
+
+      if (this.members.some(m => m.member.userId === foundUser.userId)) {
+        this.inviteError = `${foundUser.fullName} is already a member.`;
+        return;
+      }
+
+      await this.memberService.addMember(this.workspaceId, {
+        userId: foundUser.userId,
+        role: this.inviteRole
+      });
+
+      this.inviteMessage = `Added ${foundUser.fullName} as ${this.inviteRole}.`;
+      this.inviteEmail = '';
+      await this.loadMembers();
+    } catch (error: any) {
+      console.error('Invite failed:', error);
+      if (error.status === 409) {
+        this.inviteError = 'User is already a member of this workspace.';
+      } else {
+        this.inviteError = 'Failed to add member. Please try again.';
+      }
+    } finally {
+      this.isInviting = false;
+    }
+  }
+
+  async changeRole(member: MemberWithUser, newRole: string): Promise<void> {
+    try {
+      await this.memberService.updateRole(this.workspaceId, member.member.userId, { role: newRole });
+      member.member.role = newRole;
+    } catch (error) {
+      console.error('Failed to change role:', error);
+    }
+  }
+
+  async removeMember(member: MemberWithUser): Promise<void> {
+    if (member.member.userId === this.currentUserId) {
+      this.inviteError = "You can't remove yourself.";
+      return;
+    }
+    const userName = member.user?.fullName || `User ${member.member.userId}`;
+    if (!confirm(`Remove ${userName} from this workspace?`)) return;
+
+    try {
+      await this.memberService.removeMember(this.workspaceId, member.member.userId);
+      this.members = this.members.filter(m => m.member.userId !== member.member.userId);
+    } catch (error) {
+      console.error('Failed to remove member:', error);
+    }
   }
 }
