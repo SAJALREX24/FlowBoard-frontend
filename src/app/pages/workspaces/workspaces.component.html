@@ -1,104 +1,69 @@
 <div class="min-h-screen bg-gray-50">
-  <!-- Header -->
   <header class="bg-white border-b border-gray-200 px-6 py-4">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <h1 class="text-2xl font-bold text-indigo-600">FlowBoard</h1>
       <div class="flex items-center gap-4">
         <span class="text-sm text-gray-600">{{ currentUserName }}</span>
-        <button
-          (click)="logout()"
-          class="text-sm text-gray-600 hover:text-gray-900 font-medium"
-        >
-          Logout
-        </button>
+        <button (click)="logout()" class="text-sm text-gray-600 hover:text-gray-900 font-medium">Logout</button>
       </div>
     </div>
   </header>
 
-  <!-- Main content -->
   <main class="max-w-7xl mx-auto px-6 py-8">
     <div class="flex items-center justify-between mb-6">
       <h2 class="text-3xl font-bold text-gray-900">Your Workspaces</h2>
-      <button
-        (click)="toggleCreateForm()"
-        class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition"
-      >
+      <button (click)="toggleCreateForm()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition">
         {{ showCreateForm ? 'Cancel' : '+ New Workspace' }}
       </button>
     </div>
 
-    <!-- Create form -->
     <div *ngIf="showCreateForm" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
       <h3 class="text-lg font-semibold mb-4">Create New Workspace</h3>
       <div class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-          <input
-            type="text"
-            [(ngModel)]="newName"
-            placeholder="e.g. Marketing Team"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-          />
+          <input type="text" [(ngModel)]="newName" placeholder="e.g. Marketing Team" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <textarea
-            [(ngModel)]="newDescription"
-            rows="2"
-            placeholder="Optional description"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-          ></textarea>
+          <textarea [(ngModel)]="newDescription" rows="2" placeholder="Optional description" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"></textarea>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Visibility</label>
-          <select
-            [(ngModel)]="newVisibility"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-          >
+          <select [(ngModel)]="newVisibility" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
             <option value="PRIVATE">Private</option>
             <option value="PUBLIC">Public</option>
           </select>
         </div>
-        <button
-          (click)="createWorkspace()"
-          [disabled]="isCreating || !newName.trim()"
-          class="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white px-6 py-2 rounded-lg font-medium transition"
-        >
+        <button (click)="createWorkspace()" [disabled]="isCreating || !newName.trim()" class="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white px-6 py-2 rounded-lg font-medium transition">
           {{ isCreating ? 'Creating...' : 'Create Workspace' }}
         </button>
       </div>
     </div>
 
-    <!-- Loading -->
-    <div *ngIf="isLoading" class="text-center py-12 text-gray-500">
-      Loading your workspaces...
-    </div>
+    <div *ngIf="isLoading" class="text-center py-12 text-gray-500">Loading your workspaces...</div>
+    <div *ngIf="errorMessage && !isLoading" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">{{ errorMessage }}</div>
 
-    <!-- Error -->
-    <div *ngIf="errorMessage && !isLoading" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-      {{ errorMessage }}
-    </div>
-
-    <!-- Empty state -->
     <div *ngIf="!isLoading && !errorMessage && workspaces.length === 0" class="text-center py-12">
       <p class="text-gray-500 mb-4">You don't have any workspaces yet.</p>
-      <button
-        (click)="toggleCreateForm()"
-        class="text-indigo-600 hover:text-indigo-700 font-medium"
-      >
-        Create your first workspace →
-      </button>
+      <button (click)="toggleCreateForm()" class="text-indigo-600 hover:text-indigo-700 font-medium">Create your first workspace →</button>
     </div>
 
-    <!-- Workspaces grid -->
     <div *ngIf="!isLoading && workspaces.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div
         *ngFor="let workspace of workspaces"
-        class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition cursor-pointer"
+        (click)="openWorkspace(workspace.workspaceId)"
+        class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-indigo-300 transition cursor-pointer"
       >
         <div class="flex items-start justify-between mb-3">
           <h3 class="text-lg font-semibold text-gray-900">{{ workspace.name }}</h3>
-          <span class="text-xs px-2 py-1 rounded-full" [class.bg-green-100]="workspace.visibility === 'PUBLIC'" [class.text-green-700]="workspace.visibility === 'PUBLIC'" [class.bg-gray-100]="workspace.visibility === 'PRIVATE'" [class.text-gray-700]="workspace.visibility === 'PRIVATE'">
+          <span
+            class="text-xs px-2 py-1 rounded-full"
+            [class.bg-green-100]="workspace.visibility === 'PUBLIC'"
+            [class.text-green-700]="workspace.visibility === 'PUBLIC'"
+            [class.bg-gray-100]="workspace.visibility === 'PRIVATE'"
+            [class.text-gray-700]="workspace.visibility === 'PRIVATE'"
+          >
             {{ workspace.visibility }}
           </span>
         </div>

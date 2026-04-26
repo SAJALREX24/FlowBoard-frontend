@@ -15,6 +15,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/workspaces/workspaces.component').then(m => m.WorkspacesComponent)
   },
   {
+    path: 'workspaces/:workspaceId/boards',
+    loadComponent: () => import('./pages/boards/boards.component').then(m => m.BoardsComponent)
+  },
+  {
     path: '**',
     redirectTo: '/login'
   }

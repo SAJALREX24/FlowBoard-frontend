@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { WorkspaceService, Workspace, CreateWorkspaceRequest } from '../../core/workspace.service';
 import { FormsModule } from '@angular/forms';
@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-workspaces',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './workspaces.component.html',
   styleUrl: './workspaces.component.scss'
 })
@@ -19,7 +19,6 @@ export class WorkspacesComponent implements OnInit {
   currentUserName = '';
   currentUserId = 0;
 
-  // Create form state
   showCreateForm = false;
   newName = '';
   newDescription = '';
@@ -91,6 +90,10 @@ export class WorkspacesComponent implements OnInit {
     } finally {
       this.isCreating = false;
     }
+  }
+
+  openWorkspace(workspaceId: number): void {
+    this.router.navigate(['/workspaces', workspaceId, 'boards']);
   }
 
   logout(): void {
