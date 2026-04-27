@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -10,6 +10,7 @@ import { ListService, BoardList, CreateListRequest } from '../../core/list.servi
 import { CardService, Card, CreateCardRequest, MoveCardRequest } from '../../core/card.service';
 import { BoardMemberService, BoardMember } from '../../core/board-member.service';
 import { UserService, UserSummary } from '../../core/user.service';
+import { CardModalComponent } from '../../components/card-modal/card-modal.component';
 
 interface ListWithCards {
   list: BoardList;
@@ -24,7 +25,7 @@ interface MemberWithUser {
 @Component({
   selector: 'app-board-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, DragDropModule],
+  imports: [CommonModule, FormsModule, DragDropModule, CardModalComponent],
   templateUrl: './board-view.component.html',
   styleUrl: './board-view.component.scss'
 })
@@ -54,6 +55,9 @@ export class BoardViewComponent implements OnInit {
   isInviting = false;
   inviteMessage = '';
   inviteError = '';
+  // Card modal state
+  isCardModalOpen = false;
+  selectedCardId: number | null = null;
 
   readonly roles = ['OBSERVER', 'MEMBER', 'ADMIN'];
 
@@ -244,6 +248,36 @@ export class BoardViewComponent implements OnInit {
     };
     return map[priority || ''] || 'bg-gray-100 text-gray-700';
   }
+  // ===== Card Modal =====
+  openCardModal(cardId: number): void {
+    this.selectedCardId = cardId;
+    this.isCardModalOpen = true;
+  }
+
+  closeCardModal(): void {
+    this.isCardModalOpen = false;
+    this.selectedCardId = null;
+  }
+
+  onCardUpdated(updated: Card): void {
+    for (const column of this.columns) {
+      const idx = column.cards.findIndex(c => c.cardId === updated.cardId);
+      if (idx !== -1) {
+        column.cards[idx] = updated;
+        break;
+      }
+    }
+  }
+
+  onCardDeleted(cardId: number): void {
+    for (const column of this.columns) {
+      const idx = column.cards.findIndex(c => c.cardId === cardId);
+      if (idx !== -1) {
+        column.cards.splice(idx, 1);
+        break;
+      }
+    }
+  }
 
   // ===== Members =====
   async openMembers(): Promise<void> {
@@ -347,3 +381,6 @@ export class BoardViewComponent implements OnInit {
     }
   }
 }
+
+
+

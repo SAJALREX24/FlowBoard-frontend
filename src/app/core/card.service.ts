@@ -79,7 +79,8 @@ export class CardService {
 
   async deleteCard(cardId: number): Promise<void> {
     return await firstValueFrom(
-      this.http.delete<void>(`${this.apiUrl}/${cardId}`)
+      this.http.post<void>(`${this.apiUrl}/${cardId}/archive`, {})
     );
   }
 }
+
