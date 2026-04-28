@@ -42,6 +42,22 @@ export class BoardViewComponent implements OnInit {
   newListName = '';
   isAddingList = false;
 
+  editingListId: number | null = null;
+  editingListName = '';
+
+  editingBoardName = false;
+  boardNameDraft = '';
+
+  // ===== Archive view (DEFERRED) =====
+  // Backend lacks an endpoint to list archived cards. The cards/by-board endpoint
+  // filters them out via EF Core query filter. To enable an archive view we'd need
+  // to add a backend endpoint like GET /api/cards/by-board/{boardId}/archived,
+  // which is out of scope for this build. The restoreCard service method is in place
+  // for future use.
+  showArchive = false;
+  archivedCards: Card[] = [];
+  loadingArchive = false;
+
   addingCardToListId: number | null = null;
   newCardTitle = '';
   isAddingCard = false;
@@ -141,6 +157,110 @@ export class BoardViewComponent implements OnInit {
     }
   }
 
+  startEditingList(list: BoardList): void {
+    this.editingListId = list.listId;
+    this.editingListName = list.name;
+  }
+
+  cancelEditingList(): void {
+    this.editingListId = null;
+    this.editingListName = '';
+  }
+
+  async saveListName(list: BoardList): Promise<void> {
+    const trimmed = this.editingListName.trim();
+    if (!trimmed || trimmed === list.name) {
+      this.cancelEditingList();
+      return;
+    }
+    try {
+      const updated = await this.listService.updateList(list.listId, { name: trimmed });
+      list.name = updated.name;
+    } catch (err) {
+      console.error('Failed to rename list:', err);
+    } finally {
+      this.cancelEditingList();
+    }
+  }
+
+  async archiveList(list: BoardList): Promise<void> {
+    if (!confirm(`Archive list "${list.name}"? It will be hidden from the board.`)) return;
+    try {
+      await this.listService.archiveList(list.listId);
+      this.columns = this.columns.filter(c => c.list.listId !== list.listId);
+    } catch (err) {
+      console.error('Failed to archive list:', err);
+    }
+  }
+
+  startEditingBoardName(): void {
+    if (!this.board) return;
+    this.boardNameDraft = this.board.name;
+    this.editingBoardName = true;
+  }
+
+  cancelEditingBoardName(): void {
+    this.editingBoardName = false;
+    this.boardNameDraft = '';
+  }
+
+  async saveBoardName(): Promise<void> {
+    if (!this.board) return;
+    const trimmed = this.boardNameDraft.trim();
+    if (!trimmed || trimmed === this.board.name) {
+      this.cancelEditingBoardName();
+      return;
+    }
+    try {
+      const updated = await this.boardService.updateBoard(this.board.boardId, { name: trimmed });
+      this.board = updated;
+    } catch (err) {
+      console.error('Failed to update board:', err);
+    } finally {
+      this.editingBoardName = false;
+      this.boardNameDraft = '';
+    }
+  }
+
+  async openArchive(): Promise<void> {
+    if (!this.board) return;
+    this.showArchive = true;
+    this.loadingArchive = true;
+    try {
+      // Fetch all cards for the board (including archived) — backend filters archived from getCardsByBoard,
+      // so we collect by-list across archived lists too. For MVP scope, only show archived non-archived-list cards.
+      // Pull all cards for the board, then filter client-side for those with isArchived === true.
+      // Note: the backend's getCardsByBoard returns only non-archived cards. To get archived cards we'd
+      // need a backend endpoint that returns archived cards, which doesn't exist.
+      // Instead, we use the per-list endpoint via listing all lists and querying each — but that also
+      // hides archived. The backend currently has no "list archived cards" endpoint.
+      //
+      // Workaround: hit by-board, which returns active cards only. Show empty state with explanation.
+      this.archivedCards = [];
+    } catch (err) {
+      console.error('Failed to load archived cards:', err);
+      this.archivedCards = [];
+    } finally {
+      this.loadingArchive = false;
+    }
+  }
+
+  closeArchive(): void {
+    this.showArchive = false;
+    this.archivedCards = [];
+  }
+
+  async restoreCardFromArchive(card: Card): Promise<void> {
+    try {
+      await this.cardService.restoreCard(card.cardId);
+      this.archivedCards = this.archivedCards.filter(c => c.cardId !== card.cardId);
+      await this.loadBoard();
+    } catch (err) {
+      console.error('Failed to restore card:', err);
+      alert('Failed to restore card.');
+    }
+  }
+
   startAddingCard(listId: number): void {
     this.addingCardToListId = listId;
     this.newCardTitle = '';
@@ -225,6 +345,10 @@ export class BoardViewComponent implements OnInit {
 
   logout(): void {
     this.authService.logout();
+  }
+
+  goHome(): void {
+    this.router.navigate(['/workspaces']);
   }
 
   getColorClass(color: string | null): string {

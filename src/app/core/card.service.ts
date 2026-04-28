@@ -82,5 +82,17 @@ export class CardService {
       this.http.post<void>(`${this.apiUrl}/${cardId}/archive`, {})
     );
   }
+
+  async restoreCard(cardId: number): Promise<void> {
+    return await firstValueFrom(
+      this.http.post<void>(`${this.apiUrl}/${cardId}/restore`, {})
+    );
+  }
+
+  async getCardsByList(listId: number): Promise<Card[]> {
+    return await firstValueFrom(
+      this.http.get<Card[]>(`${this.apiUrl}/by-list/${listId}`)
+    );
+  }
 }
 

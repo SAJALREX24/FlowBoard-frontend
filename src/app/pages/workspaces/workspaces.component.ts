@@ -25,6 +25,9 @@ export class WorkspacesComponent implements OnInit {
   newVisibility = 'PRIVATE';
   isCreating = false;
 
+  editingWorkspaceId: number | null = null;
+  editingWorkspaceName = '';
+
   constructor(
     private authService: AuthService,
     private workspaceService: WorkspaceService,
@@ -94,6 +97,47 @@ export class WorkspacesComponent implements OnInit {
 
   openWorkspace(workspaceId: number): void {
     this.router.navigate(['/workspaces', workspaceId, 'boards']);
+  }
+
+  startEditingWorkspace(ws: Workspace, event: MouseEvent): void {
+    event.stopPropagation();
+    this.editingWorkspaceId = ws.workspaceId;
+    this.editingWorkspaceName = ws.name;
+  }
+
+  cancelEditingWorkspace(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.editingWorkspaceId = null;
+    this.editingWorkspaceName = '';
+  }
+
+  async saveWorkspaceName(ws: Workspace, event?: Event): Promise<void> {
+    if (event) event.stopPropagation();
+    const trimmed = this.editingWorkspaceName.trim();
+    if (!trimmed || trimmed === ws.name) {
+      this.cancelEditingWorkspace();
+      return;
+    }
+    try {
+      const updated = await this.workspaceService.updateWorkspace(ws.workspaceId, { name: trimmed });
+      ws.name = updated.name;
+    } catch (err) {
+      console.error('Failed to update workspace:', err);
+    } finally {
+      this.cancelEditingWorkspace();
+    }
+  }
+
+  async deleteWorkspaceConfirm(ws: Workspace, event: MouseEvent): Promise<void> {
+    event.stopPropagation();
+    if (!confirm(`Delete workspace "${ws.name}"? All boards inside will become inaccessible.`)) return;
+    try {
+      await this.workspaceService.deleteWorkspace(ws.workspaceId);
+      this.workspaces = this.workspaces.filter(w => w.workspaceId !== ws.workspaceId);
+    } catch (err) {
+      console.error('Failed to delete workspace:', err);
+      alert('Failed to delete workspace.');
+    }
   }
 
   logout(): void {

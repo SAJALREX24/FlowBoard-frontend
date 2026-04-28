@@ -2,11 +2,29 @@
   <header class="bg-white border-b border-gray-200 px-6 py-4">
     <div class="max-w-screen-2xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <h1 class="text-2xl font-bold text-indigo-600 cursor-pointer" (click)="logout()">FlowBoard</h1>
+        <h1 class="text-2xl font-bold text-indigo-600 cursor-pointer" (click)="goHome()">FlowBoard</h1>
         <span class="text-gray-300">/</span>
         <button (click)="backToBoards()" class="text-sm text-gray-600 hover:text-indigo-600">Boards</button>
         <span class="text-gray-300">/</span>
-        <span class="text-sm text-gray-700 font-medium">{{ board?.name || '...' }}</span>
+        <span
+          *ngIf="!editingBoardName && board"
+          class="text-sm text-gray-700 font-medium cursor-pointer hover:bg-gray-100 px-1 rounded"
+          (click)="startEditingBoardName()"
+          title="Click to rename board"
+        >
+          {{ board.name }}
+        </span>
+        <input
+          *ngIf="editingBoardName"
+          type="text"
+          [(ngModel)]="boardNameDraft"
+          (blur)="saveBoardName()"
+          (keydown.enter)="saveBoardName()"
+          (keydown.escape)="cancelEditingBoardName()"
+          class="text-sm font-medium px-2 py-0.5 border border-blue-400 rounded focus:outline-none focus:ring-1 focus:ring-blue-300"
+          autofocus
+        />
+        <span *ngIf="!board" class="text-sm text-gray-700 font-medium">...</span>
       </div>
       <div class="flex items-center gap-3">
         <button (click)="openMembers()" class="bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium transition">
@@ -25,9 +43,35 @@
     <div class="flex items-start gap-4 min-h-full">
 
       <div *ngFor="let column of columns" class="flex-shrink-0 w-72 bg-gray-100 rounded-xl shadow-sm">
-        <div class="px-4 py-3 border-b border-gray-200">
-          <h3 class="font-semibold text-gray-700 text-sm">{{ column.list.name }}</h3>
-          <span class="text-xs text-gray-400">{{ column.cards.length }} cards</span>
+        <div class="px-4 py-3 border-b border-gray-200 flex items-start justify-between gap-2">
+          <div class="flex-1 min-w-0">
+            <h3
+              *ngIf="editingListId !== column.list.listId"
+              class="font-semibold text-gray-700 text-sm cursor-pointer hover:bg-gray-100 px-1 rounded -mx-1 truncate"
+              (click)="startEditingList(column.list)"
+              title="Click to rename"
+            >
+              {{ column.list.name }}
+            </h3>
+            <input
+              *ngIf="editingListId === column.list.listId"
+              type="text"
+              [(ngModel)]="editingListName"
+              (blur)="saveListName(column.list)"
+              (keydown.enter)="saveListName(column.list)"
+              (keydown.escape)="cancelEditingList()"
+              class="w-full font-semibold text-gray-700 text-sm px-1 py-0 border border-blue-400 rounded focus:outline-none focus:ring-1 focus:ring-blue-300"
+              autofocus
+            />
+            <span class="text-xs text-gray-400">{{ column.cards.length }} cards</span>
+          </div>
+          <button
+            (click)="archiveList(column.list)"
+            class="text-xs text-gray-400 hover:text-red-500 px-1"
+            title="Archive list"
+          >
+            &times;
+          </button>
         </div>
 
         <div

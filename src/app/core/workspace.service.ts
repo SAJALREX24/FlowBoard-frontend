@@ -22,6 +22,13 @@ export interface CreateWorkspaceRequest {
   logoUrl?: string;
 }
 
+export interface UpdateWorkspaceRequest {
+  name?: string;
+  description?: string;
+  visibility?: string;
+  logoUrl?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class WorkspaceService {
   private readonly apiUrl = 'http://localhost:5011/api/workspaces';
@@ -43,6 +50,18 @@ export class WorkspaceService {
   async createWorkspace(request: CreateWorkspaceRequest): Promise<Workspace> {
     return await firstValueFrom(
       this.http.post<Workspace>(this.apiUrl, request)
+    );
+  }
+
+  async updateWorkspace(workspaceId: number, request: UpdateWorkspaceRequest): Promise<Workspace> {
+    return await firstValueFrom(
+      this.http.put<Workspace>(`${this.apiUrl}/${workspaceId}`, request)
+    );
+  }
+
+  async deleteWorkspace(workspaceId: number): Promise<void> {
+    return await firstValueFrom(
+      this.http.delete<void>(`${this.apiUrl}/${workspaceId}`)
     );
   }
 }

@@ -19,6 +19,12 @@ export interface CreateListRequest {
   createdBy: number;
 }
 
+export interface UpdateListRequest {
+  name?: string;
+  position?: number;
+  color?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ListService {
   private readonly apiUrl = 'http://localhost:5011/api/lists';
@@ -34,6 +40,24 @@ export class ListService {
   async createList(request: CreateListRequest): Promise<BoardList> {
     return await firstValueFrom(
       this.http.post<BoardList>(this.apiUrl, request)
+    );
+  }
+
+  async updateList(listId: number, request: UpdateListRequest): Promise<BoardList> {
+    return await firstValueFrom(
+      this.http.put<BoardList>(`${this.apiUrl}/${listId}`, request)
+    );
+  }
+
+  async archiveList(listId: number): Promise<void> {
+    return await firstValueFrom(
+      this.http.post<void>(`${this.apiUrl}/${listId}/archive`, {})
+    );
+  }
+
+  async restoreList(listId: number): Promise<void> {
+    return await firstValueFrom(
+      this.http.post<void>(`${this.apiUrl}/${listId}/restore`, {})
     );
   }
 }

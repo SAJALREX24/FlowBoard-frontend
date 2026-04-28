@@ -108,6 +108,22 @@
           />
         </div>
 
+        <!-- Assignee -->
+        <div class="col-span-2">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Assignee</label>
+          <select
+            [ngModel]="card.assigneeId === null ? '' : card.assigneeId"
+            (ngModelChange)="changeAssignee($event)"
+            [disabled]="loadingMembers"
+            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm bg-white"
+          >
+            <option value="">Unassigned</option>
+            <option *ngFor="let m of boardMembers" [value]="m.userId">
+              {{ m.fullName }}{{ m.email ? ' (' + m.email + ')' : '' }}
+            </option>
+          </select>
+        </div>
+
         <!-- Cover color -->
         <div class="col-span-2">
           <label class="block text-sm font-semibold text-gray-700 mb-2">Cover Color</label>
@@ -135,6 +151,173 @@
             </button>
           </div>
         </div>
+      </div>
+
+      <!-- Checklist -->
+      <div class="border-t border-gray-200 pt-4">
+        <div class="flex items-center justify-between mb-2">
+          <label class="text-sm font-semibold text-gray-700">Checklist</label>
+          <span *ngIf="checklistItems.length > 0" class="text-xs text-gray-500">
+            {{ checklistProgress() }}% ({{ checklistItems.length }} items)
+          </span>
+        </div>
+
+        <div *ngIf="checklistItems.length > 0" class="w-full bg-gray-200 rounded-full h-1.5 mb-3">
+          <div
+            class="bg-green-500 h-1.5 rounded-full transition-all"
+            [style.width.%]="checklistProgress()"
+          ></div>
+        </div>
+
+        <div *ngIf="loadingChecklist" class="text-xs text-gray-500 mb-2">Loading checklist...</div>
+
+        <ul class="space-y-1 mb-3">
+          <li
+            *ngFor="let item of checklistItems"
+            class="flex items-center gap-2 group hover:bg-gray-50 rounded px-2 py-1"
+          >
+            <input
+              type="checkbox"
+              [checked]="item.isCompleted"
+              (change)="toggleChecklistItem(item)"
+              class="w-4 h-4 text-blue-600 rounded cursor-pointer"
+            />
+            <span
+              class="flex-1 text-sm"
+              [class.line-through]="item.isCompleted"
+              [class.text-gray-400]="item.isCompleted"
+              [class.text-gray-800]="!item.isCompleted"
+            >
+              {{ item.text }}
+            </span>
+            <button
+              (click)="deleteChecklistItem(item)"
+              class="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 text-xs"
+              title="Delete"
+            >
+              &times;
+            </button>
+          </li>
+        </ul>
+
+        <div class="flex gap-2">
+          <input
+            type="text"
+            [(ngModel)]="newItemText"
+            (keydown.enter)="addChecklistItem()"
+            placeholder="Add a checklist item..."
+            class="flex-1 px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+          />
+          <button
+            (click)="addChecklistItem()"
+            [disabled]="isAddingItem || !newItemText.trim()"
+            class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white text-sm rounded"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+
+      <!-- Comments -->
+      <div class="border-t border-gray-200 pt-4">
+        <label class="block text-sm font-semibold text-gray-700 mb-3">Comments</label>
+
+        <!-- New comment -->
+        <div class="mb-4">
+          <textarea
+            [(ngModel)]="newCommentContent"
+            rows="2"
+            placeholder="Write a comment..."
+            class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+          ></textarea>
+          <div class="flex justify-end mt-1">
+            <button
+              (click)="postComment()"
+              [disabled]="isPostingComment || !newCommentContent.trim()"
+              class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white text-sm rounded"
+            >
+              {{ isPostingComment ? 'Posting...' : 'Post' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading -->
+        <div *ngIf="loadingComments" class="text-xs text-gray-500">Loading comments...</div>
+
+        <!-- Empty state -->
+        <div *ngIf="!loadingComments && topLevelComments().length === 0" class="text-xs text-gray-400 italic py-2">
+          No comments yet. Be the first.
+        </div>
+
+        <!-- Threaded comments -->
+        <ul class="space-y-3">
+          <li *ngFor="let c of topLevelComments()" class="border-l-2 border-gray-200 pl-3">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <div class="text-xs text-gray-500 mb-0.5">
+                  <span class="font-medium text-gray-700">User {{ c.authorId }}</span>
+                  &middot; {{ formatCommentTime(c.createdAt) }}
+                </div>
+                <div class="text-sm text-gray-800 whitespace-pre-wrap">{{ c.content }}</div>
+              </div>
+              <div class="flex items-center gap-2 ml-2">
+                <button
+                  (click)="startReply(c.commentId)"
+                  class="text-xs text-blue-600 hover:text-blue-800"
+                >
+                  Reply
+                </button>
+                <button
+                  *ngIf="c.authorId === currentUserId"
+                  (click)="deleteComment(c.commentId)"
+                  class="text-xs text-red-500 hover:text-red-700"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            <!-- Reply box -->
+            <div *ngIf="replyingTo === c.commentId" class="mt-2 pl-2">
+              <textarea
+                [(ngModel)]="replyContent"
+                rows="2"
+                placeholder="Write a reply..."
+                class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-blue-300"
+              ></textarea>
+              <div class="flex justify-end gap-2 mt-1">
+                <button (click)="cancelReply()" class="text-xs text-gray-500 hover:text-gray-700">
+                  Cancel
+                </button>
+                <button
+                  (click)="postReply(c.commentId)"
+                  [disabled]="!replyContent.trim()"
+                  class="px-2 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white text-xs rounded"
+                >
+                  Reply
+                </button>
+              </div>
+            </div>
+
+            <!-- Replies -->
+            <ul *ngIf="repliesOf(c.commentId).length > 0" class="mt-2 ml-4 space-y-2">
+              <li *ngFor="let r of repliesOf(c.commentId)" class="border-l-2 border-gray-100 pl-2">
+                <div class="text-xs text-gray-500 mb-0.5">
+                  <span class="font-medium text-gray-700">User {{ r.authorId }}</span>
+                  &middot; {{ formatCommentTime(r.createdAt) }}
+                </div>
+                <div class="text-sm text-gray-800 whitespace-pre-wrap">{{ r.content }}</div>
+                <button
+                  *ngIf="r.authorId === currentUserId"
+                  (click)="deleteComment(r.commentId)"
+                  class="text-xs text-red-500 hover:text-red-700 mt-1"
+                >
+                  Delete
+                </button>
+              </li>
+            </ul>
+          </li>
+        </ul>
       </div>
 
       <!-- Card metadata footer -->

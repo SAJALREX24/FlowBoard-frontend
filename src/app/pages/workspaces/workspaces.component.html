@@ -53,10 +53,38 @@
       <div
         *ngFor="let workspace of workspaces"
         (click)="openWorkspace(workspace.workspaceId)"
-        class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-indigo-300 transition cursor-pointer"
+        class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-indigo-300 transition cursor-pointer group"
       >
-        <div class="flex items-start justify-between mb-3">
-          <h3 class="text-lg font-semibold text-gray-900">{{ workspace.name }}</h3>
+        <div class="flex items-start justify-between mb-3 gap-2">
+          <div class="flex-1 min-w-0">
+            <ng-container *ngIf="editingWorkspaceId !== workspace.workspaceId">
+              <h3
+                class="text-lg font-semibold text-gray-900 truncate cursor-text hover:bg-gray-50 px-1 -mx-1 rounded"
+                (click)="startEditingWorkspace(workspace, $event)"
+                title="Click to rename"
+              >
+                {{ workspace.name }}
+              </h3>
+            </ng-container>
+            <input
+              *ngIf="editingWorkspaceId === workspace.workspaceId"
+              type="text"
+              [(ngModel)]="editingWorkspaceName"
+              (click)="$event.stopPropagation()"
+              (blur)="saveWorkspaceName(workspace, $event)"
+              (keydown.enter)="saveWorkspaceName(workspace, $event)"
+              (keydown.escape)="cancelEditingWorkspace($event)"
+              class="w-full text-lg font-semibold text-gray-900 px-1 py-0.5 border border-blue-400 rounded focus:outline-none focus:ring-1 focus:ring-blue-300"
+              autofocus
+            />
+          </div>
+          <button
+            (click)="deleteWorkspaceConfirm(workspace, $event)"
+            class="opacity-0 group-hover:opacity-100 text-xs text-red-500 hover:text-red-700 px-1"
+            title="Delete workspace"
+          >
+            Delete
+          </button>
           <span
             class="text-xs px-2 py-1 rounded-full"
             [class.bg-green-100]="workspace.visibility === 'PUBLIC'"

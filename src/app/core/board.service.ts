@@ -24,6 +24,13 @@ export interface CreateBoardRequest {
   backgroundColor?: string;
 }
 
+export interface UpdateBoardRequest {
+  name?: string;
+  description?: string;
+  visibility?: string;
+  backgroundColor?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class BoardService {
   private readonly apiUrl = 'http://localhost:5011/api/boards';
@@ -45,6 +52,24 @@ export class BoardService {
   async createBoard(request: CreateBoardRequest): Promise<Board> {
     return await firstValueFrom(
       this.http.post<Board>(this.apiUrl, request)
+    );
+  }
+
+  async updateBoard(boardId: number, request: UpdateBoardRequest): Promise<Board> {
+    return await firstValueFrom(
+      this.http.put<Board>(`${this.apiUrl}/${boardId}`, request)
+    );
+  }
+
+  async closeBoard(boardId: number): Promise<void> {
+    return await firstValueFrom(
+      this.http.post<void>(`${this.apiUrl}/${boardId}/close`, {})
+    );
+  }
+
+  async reopenBoard(boardId: number): Promise<void> {
+    return await firstValueFrom(
+      this.http.post<void>(`${this.apiUrl}/${boardId}/reopen`, {})
     );
   }
 }
