@@ -147,14 +147,40 @@ export class BoardsComponent implements OnInit {
 
   getColorClass(color: string | null): string {
     const map: Record<string, string> = {
-      'BLUE': 'bg-blue-500',
-      'GREEN': 'bg-green-500',
-      'PURPLE': 'bg-purple-500',
-      'ORANGE': 'bg-orange-500',
-      'RED': 'bg-red-500',
-      'GRAY': 'bg-gray-500'
+      'BLUE': 'bg-gradient-to-br from-sky-800/80 to-indigo-900/80',
+      'GREEN': 'bg-gradient-to-br from-emerald-800/80 to-teal-900/80',
+      'PURPLE': 'bg-gradient-to-br from-violet-800/80 to-fuchsia-900/80',
+      'ORANGE': 'bg-gradient-to-br from-amber-800/80 to-orange-900/80',
+      'RED': 'bg-gradient-to-br from-rose-800/80 to-red-900/80',
+      'GRAY': 'bg-gradient-to-br from-zinc-700/80 to-zinc-800/80'
     };
-    return map[color || 'GRAY'] || 'bg-gray-500';
+    return map[color || 'BLUE'] || 'bg-gradient-to-br from-sky-800/80 to-indigo-900/80';
+  }
+
+  getInitials(name: string | null | undefined): string {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  getAvatarColorClass(seed: number | string): string {
+    const palette = [
+      'bg-emerald-600',
+      'bg-teal-600',
+      'bg-cyan-600',
+      'bg-sky-600',
+      'bg-indigo-600',
+      'bg-violet-600',
+      'bg-fuchsia-600',
+      'bg-rose-600',
+      'bg-amber-600',
+      'bg-lime-600'
+    ];
+    const num = typeof seed === 'number'
+      ? seed
+      : Array.from(seed).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+    return palette[Math.abs(num) % palette.length];
   }
 
   // ===== Members =====

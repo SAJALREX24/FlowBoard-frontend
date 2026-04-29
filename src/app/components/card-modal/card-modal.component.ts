@@ -407,5 +407,31 @@ export class CardModalComponent implements OnChanges {
       this.errorMessage = 'Failed to delete checklist item.';
     }
   }
+
+  getInitials(name: string | null | undefined): string {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  getAvatarColorClass(seed: number | string): string {
+    const palette = [
+      'bg-emerald-600',
+      'bg-teal-600',
+      'bg-cyan-600',
+      'bg-sky-600',
+      'bg-indigo-600',
+      'bg-violet-600',
+      'bg-fuchsia-600',
+      'bg-rose-600',
+      'bg-amber-600',
+      'bg-lime-600'
+    ];
+    const num = typeof seed === 'number'
+      ? seed
+      : Array.from(seed).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+    return palette[Math.abs(num) % palette.length];
+  }
 }
 

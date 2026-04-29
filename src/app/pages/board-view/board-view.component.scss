@@ -6,11 +6,25 @@
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 0.5rem;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  background: #27272a !important; /* zinc-800 */
+  color: #f4f4f5 !important;
+  border: 1px solid #3f3f46 !important; /* zinc-700 */
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.6),
+    0 10px 10px -5px rgba(0, 0, 0, 0.4) !important;
+  transform: rotate(2deg);
+  opacity: 0.95;
 }
 
 .cdk-drag-placeholder {
-  opacity: 0.3;
+  opacity: 0.15;
+  background: #18181b !important; /* zinc-900 */
+  border: 2px dashed #3f3f46 !important;
+  border-radius: 0.5rem;
+  /* hide all child content of the placeholder */
+  & > * {
+    visibility: hidden;
+  }
 }
 
 .cdk-drag-animating {

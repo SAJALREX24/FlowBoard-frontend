@@ -352,25 +352,71 @@ export class BoardViewComponent implements OnInit {
   }
 
   getColorClass(color: string | null): string {
+    // Card cover stripe — small accent on top of card. Use slightly muted shades
+    // since it sits inside a zinc-800 card on a zinc-950 page.
     const map: Record<string, string> = {
-      'BLUE': 'bg-blue-500',
-      'GREEN': 'bg-green-500',
-      'PURPLE': 'bg-purple-500',
-      'ORANGE': 'bg-orange-500',
-      'RED': 'bg-red-500',
-      'GRAY': 'bg-gray-500'
+      'BLUE': 'bg-sky-600',
+      'GREEN': 'bg-emerald-600',
+      'PURPLE': 'bg-violet-600',
+      'ORANGE': 'bg-amber-600',
+      'RED': 'bg-rose-600',
+      'GRAY': 'bg-zinc-600',
+      'YELLOW': 'bg-yellow-600',
+      'PINK': 'bg-pink-600'
     };
-    return map[color || 'BLUE'] || 'bg-blue-500';
+    return map[color || 'BLUE'] || 'bg-sky-600';
+  }
+
+  getBoardPageBgClass(): string {
+    return 'bg-zinc-950';
+  }
+
+  getBoardAccentBandClass(color: string | null): string {
+    const map: Record<string, string> = {
+      'BLUE': 'bg-gradient-to-r from-sky-500/20 via-sky-500/10 to-transparent',
+      'GREEN': 'bg-gradient-to-r from-emerald-500/20 via-emerald-500/10 to-transparent',
+      'PURPLE': 'bg-gradient-to-r from-violet-500/20 via-violet-500/10 to-transparent',
+      'ORANGE': 'bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent',
+      'RED': 'bg-gradient-to-r from-rose-500/20 via-rose-500/10 to-transparent',
+      'GRAY': 'bg-gradient-to-r from-zinc-500/20 via-zinc-500/10 to-transparent'
+    };
+    return map[color || 'BLUE'] || 'bg-gradient-to-r from-sky-500/20 via-sky-500/10 to-transparent';
   }
 
   getPriorityClass(priority: string | null): string {
     const map: Record<string, string> = {
-      'LOW': 'bg-blue-100 text-blue-700',
-      'MEDIUM': 'bg-yellow-100 text-yellow-700',
-      'HIGH': 'bg-orange-100 text-orange-700',
-      'URGENT': 'bg-red-100 text-red-700'
+      'LOW': 'bg-sky-950 text-sky-300 border border-sky-800',
+      'MEDIUM': 'bg-amber-950 text-amber-300 border border-amber-800',
+      'HIGH': 'bg-orange-950 text-orange-300 border border-orange-800',
+      'URGENT': 'bg-red-950 text-red-300 border border-red-800'
     };
-    return map[priority || ''] || 'bg-gray-100 text-gray-700';
+    return map[priority || ''] || 'bg-zinc-800 text-zinc-300 border border-zinc-700';
+  }
+
+  getInitials(name: string | null | undefined): string {
+    if (!name) return '?';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  getAvatarColorClass(seed: number | string): string {
+    const palette = [
+      'bg-emerald-600',
+      'bg-teal-600',
+      'bg-cyan-600',
+      'bg-sky-600',
+      'bg-indigo-600',
+      'bg-violet-600',
+      'bg-fuchsia-600',
+      'bg-rose-600',
+      'bg-amber-600',
+      'bg-lime-600'
+    ];
+    const num = typeof seed === 'number'
+      ? seed
+      : Array.from(seed).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+    return palette[Math.abs(num) % palette.length];
   }
   // ===== Card Modal =====
   openCardModal(cardId: number): void {

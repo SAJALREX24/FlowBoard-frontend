@@ -1,52 +1,57 @@
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
-  <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+<div class="min-h-screen flex items-center justify-center bg-zinc-950 px-4 relative overflow-hidden">
+  <!-- Ambient gradient layers -->
+  <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(16,185,129,0.12),transparent_70%)]"></div>
+  <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_40%_40%_at_85%_100%,rgba(20,184,166,0.08),transparent_60%)]"></div>
+  <div class="absolute inset-0 -z-10 opacity-[0.03] bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,1)_1px,transparent_0)] bg-[length:24px_24px]"></div>
+  <div class="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl p-8">
     <div class="text-center mb-8">
-      <h1 class="text-4xl font-bold text-indigo-600">FlowBoard</h1>
-      <p class="text-gray-500 mt-2">Sign in to your workspace</p>
+      <h1 class="text-4xl font-bold text-emerald-500/90 tracking-tight">FlowBoard</h1>
+      <p class="text-zinc-300 mt-2 text-sm">Organize work. Collaborate seamlessly.</p>
+      <p class="text-zinc-500 mt-4 text-xs">Sign in to your workspace</p>
     </div>
 
     <form (submit)="onSubmit(); $event.preventDefault()" class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <label class="block text-sm font-medium text-zinc-300 mb-1">Email</label>
         <input
           type="email"
           [(ngModel)]="email"
           name="email"
           [disabled]="isLoading"
           placeholder="you@example.com"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          class="w-full bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder-zinc-500 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
         />
       </div>
 
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+        <label class="block text-sm font-medium text-zinc-300 mb-1">Password</label>
         <input
           type="password"
           [(ngModel)]="password"
           name="password"
           [disabled]="isLoading"
           placeholder="••••••••"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          class="w-full bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder-zinc-500 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
         />
       </div>
 
-      <div *ngIf="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg text-sm">
+      <div *ngIf="errorMessage" class="bg-red-950/50 border border-red-800 text-red-300 px-4 py-2 rounded-lg text-sm">
         {{ errorMessage }}
       </div>
 
       <button
         type="submit"
         [disabled]="isLoading"
-        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg transition disabled:bg-indigo-300 disabled:cursor-not-allowed"
+        class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed"
       >
         <span *ngIf="!isLoading">Sign In</span>
         <span *ngIf="isLoading">Signing in...</span>
       </button>
     </form>
 
-    <p class="text-center text-sm text-gray-600 mt-6">
+    <p class="text-center text-sm text-zinc-400 mt-6">
       Don't have an account?
-      <a routerLink="/register" class="text-indigo-600 hover:text-indigo-700 font-medium">Sign up</a>
+      <a routerLink="/register" class="text-emerald-400 hover:text-emerald-300 font-medium">Sign up</a>
     </p>
   </div>
 </div>

@@ -1,22 +1,22 @@
-﻿<div
+<div
   *ngIf="isOpen"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
   (click)="onBackdropClick($event)"
 >
-  <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+  <div class="bg-zinc-900 border border-zinc-800 rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
 
     <!-- Cover color band -->
     <div
       *ngIf="card?.coverColor"
-      class="h-12 rounded-t-lg"
+      class="h-1.5 rounded-t-lg"
       [ngClass]="{
-        'bg-red-500': card?.coverColor === 'RED',
-        'bg-orange-500': card?.coverColor === 'ORANGE',
-        'bg-yellow-400': card?.coverColor === 'YELLOW',
-        'bg-green-500': card?.coverColor === 'GREEN',
-        'bg-blue-500': card?.coverColor === 'BLUE',
-        'bg-purple-500': card?.coverColor === 'PURPLE',
-        'bg-pink-500': card?.coverColor === 'PINK'
+        'bg-red-600': card?.coverColor === 'RED',
+        'bg-orange-600': card?.coverColor === 'ORANGE',
+        'bg-yellow-500': card?.coverColor === 'YELLOW',
+        'bg-green-600': card?.coverColor === 'GREEN',
+        'bg-blue-600': card?.coverColor === 'BLUE',
+        'bg-purple-600': card?.coverColor === 'PURPLE',
+        'bg-pink-600': card?.coverColor === 'PINK'
       }"
     ></div>
 
@@ -25,7 +25,7 @@
       <div class="flex-1 mr-4">
         <ng-container *ngIf="card && !editingTitle">
           <h2
-            class="text-2xl font-semibold text-gray-900 cursor-pointer hover:bg-gray-100 px-2 py-1 rounded -ml-2"
+            class="text-2xl font-semibold text-zinc-100 cursor-pointer hover:bg-zinc-800 px-2 py-1 rounded -ml-2"
             (click)="startEditingTitle()"
             title="Click to edit"
           >
@@ -40,7 +40,7 @@
             (blur)="saveTitle()"
             (keydown.enter)="saveTitle()"
             (keydown.escape)="editingTitle = false"
-            class="w-full text-2xl font-semibold text-gray-900 px-2 py-1 border border-blue-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
+            class="w-full text-2xl font-semibold text-zinc-100 bg-zinc-800 px-2 py-1 border border-emerald-500 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500"
             #titleInput
             autofocus
           />
@@ -49,7 +49,7 @@
 
       <button
         (click)="close()"
-        class="text-gray-400 hover:text-gray-600 text-2xl font-bold leading-none px-2"
+        class="text-zinc-500 hover:text-zinc-300 text-2xl font-bold leading-none px-2"
         title="Close"
       >
         &times;
@@ -57,12 +57,12 @@
     </div>
 
     <!-- Loading state -->
-    <div *ngIf="loading" class="px-6 py-8 text-center text-gray-500">
+    <div *ngIf="loading" class="px-6 py-8 text-center text-zinc-500">
       Loading card details...
     </div>
 
     <!-- Error message -->
-    <div *ngIf="errorMessage" class="mx-6 my-2 px-4 py-2 bg-red-50 border border-red-200 text-red-700 rounded text-sm">
+    <div *ngIf="errorMessage" class="mx-6 my-2 px-4 py-2 bg-red-950/50 border border-red-800 text-red-300 rounded text-sm">
       {{ errorMessage }}
     </div>
 
@@ -71,13 +71,13 @@
 
       <!-- Description -->
       <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+        <label class="block text-sm font-semibold text-zinc-300 mb-2">Description</label>
         <textarea
           [(ngModel)]="descriptionDraft"
           (blur)="saveDescription()"
           rows="4"
           placeholder="Add a more detailed description..."
-          class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-500 text-sm text-gray-800"
+          class="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder-zinc-500 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
         ></textarea>
       </div>
 
@@ -86,11 +86,11 @@
 
         <!-- Priority -->
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-2">Priority</label>
+          <label class="block text-sm font-semibold text-zinc-300 mb-2">Priority</label>
           <select
             [ngModel]="card.priority || ''"
             (ngModelChange)="changePriority($event)"
-            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm bg-white"
+            class="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 text-zinc-100 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
           >
             <option value="">No priority</option>
             <option *ngFor="let p of priorityOptions" [value]="p">{{ p }}</option>
@@ -99,23 +99,23 @@
 
         <!-- Due date -->
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-2">Due Date</label>
+          <label class="block text-sm font-semibold text-zinc-300 mb-2">Due Date</label>
           <input
             type="date"
             [ngModel]="formatDateForInput(card.dueDate)"
             (ngModelChange)="changeDueDate($event)"
-            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm"
+            class="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 text-zinc-100 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
           />
         </div>
 
         <!-- Assignee -->
         <div class="col-span-2">
-          <label class="block text-sm font-semibold text-gray-700 mb-2">Assignee</label>
+          <label class="block text-sm font-semibold text-zinc-300 mb-2">Assignee</label>
           <select
             [ngModel]="card.assigneeId === null ? '' : card.assigneeId"
             (ngModelChange)="changeAssignee($event)"
             [disabled]="loadingMembers"
-            class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-300 text-sm bg-white"
+            class="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 text-zinc-100 rounded focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
           >
             <option value="">Unassigned</option>
             <option *ngFor="let m of boardMembers" [value]="m.userId">
@@ -126,17 +126,17 @@
 
         <!-- Cover color -->
         <div class="col-span-2">
-          <label class="block text-sm font-semibold text-gray-700 mb-2">Cover Color</label>
+          <label class="block text-sm font-semibold text-zinc-300 mb-2">Cover Color</label>
           <div class="flex flex-wrap gap-2">
             <button
               *ngFor="let opt of coverColorOptions"
               (click)="changeCoverColor(opt.value)"
               [class.ring-2]="card.coverColor === opt.value"
               [class.ring-offset-2]="card.coverColor === opt.value"
-              [class.ring-blue-500]="card.coverColor === opt.value"
-              class="w-10 h-10 rounded border border-gray-200 hover:scale-110 transition-transform"
+              [class.ring-emerald-500]="card.coverColor === opt.value"
+              class="w-10 h-10 rounded border border-zinc-700 hover:scale-110 transition-transform flex items-center justify-center"
               [ngClass]="{
-                'bg-white': opt.value === null,
+                'bg-zinc-800': opt.value === null,
                 'bg-red-500': opt.value === 'RED',
                 'bg-orange-500': opt.value === 'ORANGE',
                 'bg-yellow-400': opt.value === 'YELLOW',
@@ -147,52 +147,52 @@
               }"
               [title]="opt.label"
             >
-              <span *ngIf="opt.value === null" class="text-xs text-gray-500">None</span>
+              <span *ngIf="opt.value === null" class="text-xs text-zinc-400">None</span>
             </button>
           </div>
         </div>
       </div>
 
       <!-- Checklist -->
-      <div class="border-t border-gray-200 pt-4">
+      <div class="border-t border-zinc-800 pt-4">
         <div class="flex items-center justify-between mb-2">
-          <label class="text-sm font-semibold text-gray-700">Checklist</label>
-          <span *ngIf="checklistItems.length > 0" class="text-xs text-gray-500">
+          <label class="text-sm font-semibold text-zinc-200">Checklist</label>
+          <span *ngIf="checklistItems.length > 0" class="text-xs text-zinc-500">
             {{ checklistProgress() }}% ({{ checklistItems.length }} items)
           </span>
         </div>
 
-        <div *ngIf="checklistItems.length > 0" class="w-full bg-gray-200 rounded-full h-1.5 mb-3">
+        <div *ngIf="checklistItems.length > 0" class="w-full bg-zinc-800 rounded-full h-1.5 mb-3">
           <div
-            class="bg-green-500 h-1.5 rounded-full transition-all"
+            class="bg-emerald-500 h-1.5 rounded-full transition-all"
             [style.width.%]="checklistProgress()"
           ></div>
         </div>
 
-        <div *ngIf="loadingChecklist" class="text-xs text-gray-500 mb-2">Loading checklist...</div>
+        <div *ngIf="loadingChecklist" class="text-xs text-zinc-500 mb-2">Loading checklist...</div>
 
         <ul class="space-y-1 mb-3">
           <li
             *ngFor="let item of checklistItems"
-            class="flex items-center gap-2 group hover:bg-gray-50 rounded px-2 py-1"
+            class="flex items-center gap-2 group hover:bg-zinc-800/50 rounded px-2 py-1"
           >
             <input
               type="checkbox"
               [checked]="item.isCompleted"
               (change)="toggleChecklistItem(item)"
-              class="w-4 h-4 text-blue-600 rounded cursor-pointer"
+              class="w-4 h-4 accent-emerald-500 rounded cursor-pointer"
             />
             <span
               class="flex-1 text-sm"
               [class.line-through]="item.isCompleted"
-              [class.text-gray-400]="item.isCompleted"
-              [class.text-gray-800]="!item.isCompleted"
+              [class.text-zinc-500]="item.isCompleted"
+              [class.text-zinc-200]="!item.isCompleted"
             >
               {{ item.text }}
             </span>
             <button
               (click)="deleteChecklistItem(item)"
-              class="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 text-xs"
+              class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 text-xs"
               title="Delete"
             >
               &times;
@@ -206,12 +206,12 @@
             [(ngModel)]="newItemText"
             (keydown.enter)="addChecklistItem()"
             placeholder="Add a checklist item..."
-            class="flex-1 px-3 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+            class="flex-1 px-3 py-1.5 bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder-zinc-500 rounded text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
           />
           <button
             (click)="addChecklistItem()"
             [disabled]="isAddingItem || !newItemText.trim()"
-            class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white text-sm rounded"
+            class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white text-sm rounded"
           >
             Add
           </button>
@@ -219,8 +219,8 @@
       </div>
 
       <!-- Comments -->
-      <div class="border-t border-gray-200 pt-4">
-        <label class="block text-sm font-semibold text-gray-700 mb-3">Comments</label>
+      <div class="border-t border-zinc-800 pt-4">
+        <label class="block text-sm font-semibold text-zinc-200 mb-3">Comments</label>
 
         <!-- New comment -->
         <div class="mb-4">
@@ -228,13 +228,13 @@
             [(ngModel)]="newCommentContent"
             rows="2"
             placeholder="Write a comment..."
-            class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+            class="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder-zinc-500 rounded text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
           ></textarea>
           <div class="flex justify-end mt-1">
             <button
               (click)="postComment()"
               [disabled]="isPostingComment || !newCommentContent.trim()"
-              class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white text-sm rounded"
+              class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white text-sm rounded"
             >
               {{ isPostingComment ? 'Posting...' : 'Post' }}
             </button>
@@ -242,86 +242,106 @@
         </div>
 
         <!-- Loading -->
-        <div *ngIf="loadingComments" class="text-xs text-gray-500">Loading comments...</div>
+        <div *ngIf="loadingComments" class="text-xs text-zinc-500">Loading comments...</div>
 
         <!-- Empty state -->
-        <div *ngIf="!loadingComments && topLevelComments().length === 0" class="text-xs text-gray-400 italic py-2">
+        <div *ngIf="!loadingComments && topLevelComments().length === 0" class="text-xs text-zinc-600 italic py-2">
           No comments yet. Be the first.
         </div>
 
         <!-- Threaded comments -->
         <ul class="space-y-3">
-          <li *ngFor="let c of topLevelComments()" class="border-l-2 border-gray-200 pl-3">
-            <div class="flex items-start justify-between">
-              <div class="flex-1">
-                <div class="text-xs text-gray-500 mb-0.5">
-                  <span class="font-medium text-gray-700">User {{ c.authorId }}</span>
-                  &middot; {{ formatCommentTime(c.createdAt) }}
-                </div>
-                <div class="text-sm text-gray-800 whitespace-pre-wrap">{{ c.content }}</div>
+          <li *ngFor="let c of topLevelComments()" class="pl-3 border-l-2 border-zinc-700">
+            <div class="flex items-start gap-3">
+              <div
+                class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0"
+                [class]="getAvatarColorClass(c.authorId)"
+              >
+                U{{ c.authorId }}
               </div>
-              <div class="flex items-center gap-2 ml-2">
-                <button
-                  (click)="startReply(c.commentId)"
-                  class="text-xs text-blue-600 hover:text-blue-800"
-                >
-                  Reply
-                </button>
-                <button
-                  *ngIf="c.authorId === currentUserId"
-                  (click)="deleteComment(c.commentId)"
-                  class="text-xs text-red-500 hover:text-red-700"
-                >
-                  Delete
-                </button>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-start justify-between">
+                  <div class="flex-1">
+                    <div class="text-xs text-zinc-500 mb-0.5">
+                      <span class="font-medium text-zinc-300">User {{ c.authorId }}</span>
+                      &middot; {{ formatCommentTime(c.createdAt) }}
+                    </div>
+                    <div class="text-sm text-zinc-200 whitespace-pre-wrap">{{ c.content }}</div>
+                  </div>
+                  <div class="flex items-center gap-2 ml-2">
+                    <button
+                      (click)="startReply(c.commentId)"
+                      class="text-xs text-emerald-400 hover:text-emerald-300"
+                    >
+                      Reply
+                    </button>
+                    <button
+                      *ngIf="c.authorId === currentUserId"
+                      (click)="deleteComment(c.commentId)"
+                      class="text-xs text-red-400 hover:text-red-300"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Reply box -->
+                <div *ngIf="replyingTo === c.commentId" class="mt-2 pl-2">
+                  <textarea
+                    [(ngModel)]="replyContent"
+                    rows="2"
+                    placeholder="Write a reply..."
+                    class="w-full px-2 py-1 bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder-zinc-500 rounded text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  ></textarea>
+                  <div class="flex justify-end gap-2 mt-1">
+                    <button (click)="cancelReply()" class="text-xs text-zinc-400 hover:text-zinc-200">
+                      Cancel
+                    </button>
+                    <button
+                      (click)="postReply(c.commentId)"
+                      [disabled]="!replyContent.trim()"
+                      class="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white text-xs rounded"
+                    >
+                      Reply
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Replies -->
+                <ul *ngIf="repliesOf(c.commentId).length > 0" class="mt-2 ml-4 space-y-2">
+                  <li *ngFor="let r of repliesOf(c.commentId)" class="border-l-2 border-zinc-800 pl-2">
+                    <div class="flex items-start gap-2">
+                      <div
+                        class="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-semibold flex-shrink-0"
+                        [class]="getAvatarColorClass(r.authorId)"
+                      >
+                        U{{ r.authorId }}
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="text-xs text-zinc-500 mb-0.5">
+                          <span class="font-medium text-zinc-300">User {{ r.authorId }}</span>
+                          &middot; {{ formatCommentTime(r.createdAt) }}
+                        </div>
+                        <div class="text-sm text-zinc-200 whitespace-pre-wrap">{{ r.content }}</div>
+                        <button
+                          *ngIf="r.authorId === currentUserId"
+                          (click)="deleteComment(r.commentId)"
+                          class="text-xs text-red-400 hover:text-red-300 mt-1"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
               </div>
             </div>
-
-            <!-- Reply box -->
-            <div *ngIf="replyingTo === c.commentId" class="mt-2 pl-2">
-              <textarea
-                [(ngModel)]="replyContent"
-                rows="2"
-                placeholder="Write a reply..."
-                class="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-blue-300"
-              ></textarea>
-              <div class="flex justify-end gap-2 mt-1">
-                <button (click)="cancelReply()" class="text-xs text-gray-500 hover:text-gray-700">
-                  Cancel
-                </button>
-                <button
-                  (click)="postReply(c.commentId)"
-                  [disabled]="!replyContent.trim()"
-                  class="px-2 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white text-xs rounded"
-                >
-                  Reply
-                </button>
-              </div>
-            </div>
-
-            <!-- Replies -->
-            <ul *ngIf="repliesOf(c.commentId).length > 0" class="mt-2 ml-4 space-y-2">
-              <li *ngFor="let r of repliesOf(c.commentId)" class="border-l-2 border-gray-100 pl-2">
-                <div class="text-xs text-gray-500 mb-0.5">
-                  <span class="font-medium text-gray-700">User {{ r.authorId }}</span>
-                  &middot; {{ formatCommentTime(r.createdAt) }}
-                </div>
-                <div class="text-sm text-gray-800 whitespace-pre-wrap">{{ r.content }}</div>
-                <button
-                  *ngIf="r.authorId === currentUserId"
-                  (click)="deleteComment(r.commentId)"
-                  class="text-xs text-red-500 hover:text-red-700 mt-1"
-                >
-                  Delete
-                </button>
-              </li>
-            </ul>
           </li>
         </ul>
       </div>
 
       <!-- Card metadata footer -->
-      <div class="text-xs text-gray-500 pt-4 border-t border-gray-200 space-y-1">
+      <div class="text-xs text-zinc-500 pt-4 border-t border-zinc-800 space-y-1">
         <div>Card ID: {{ card.cardId }}</div>
         <div>Created: {{ card.createdAt | date:'medium' }}</div>
         <div *ngIf="card.updatedAt !== card.createdAt">Last updated: {{ card.updatedAt | date:'medium' }}</div>
@@ -329,16 +349,16 @@
     </div>
 
     <!-- Footer actions -->
-    <div *ngIf="card && !loading" class="flex items-center justify-between px-6 py-4 bg-gray-50 rounded-b-lg border-t border-gray-200">
+    <div *ngIf="card && !loading" class="flex items-center justify-between px-6 py-4 bg-zinc-900 rounded-b-lg border-t border-zinc-800">
       <button
         (click)="deleteCard()"
-        class="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded transition-colors"
+        class="px-4 py-2 text-sm font-medium text-red-400 hover:bg-red-950/50 rounded transition-colors"
       >
         Delete card
       </button>
       <button
         (click)="close()"
-        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors"
+        class="px-4 py-2 text-sm font-medium text-zinc-300 bg-zinc-800 border border-zinc-700 rounded hover:bg-zinc-700 transition-colors"
       >
         Close
       </button>
