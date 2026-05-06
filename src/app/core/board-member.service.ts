@@ -21,7 +21,7 @@ export interface UpdateBoardMemberRoleRequest {
 
 @Injectable({ providedIn: 'root' })
 export class BoardMemberService {
-  private readonly apiUrl = 'http://localhost:5011/api/boards';
+  private readonly apiUrl = 'https://flowboard-backend-48oe.onrender.com/api/boards';
 
   constructor(private http: HttpClient) {}
 

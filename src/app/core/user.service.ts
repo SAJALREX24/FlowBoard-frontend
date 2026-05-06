@@ -12,7 +12,7 @@ export interface UserSummary {
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private readonly apiUrl = 'http://localhost:5011/api/auth';
+  private readonly apiUrl = 'https://flowboard-backend-48oe.onrender.com/api/auth';
 
   constructor(private http: HttpClient) {}
 

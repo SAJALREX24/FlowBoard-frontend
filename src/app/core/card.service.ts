@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
@@ -43,7 +43,7 @@ export interface UpdateCardRequest {
 
 @Injectable({ providedIn: 'root' })
 export class CardService {
-  private readonly apiUrl = 'http://localhost:5011/api/cards';
+  private readonly apiUrl = 'https://flowboard-backend-48oe.onrender.com/api/cards';
 
   constructor(private http: HttpClient) {}
 

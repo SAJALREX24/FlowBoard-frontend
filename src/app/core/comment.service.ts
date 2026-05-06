@@ -26,7 +26,7 @@ export interface UpdateCommentRequest {
 
 @Injectable({ providedIn: 'root' })
 export class CommentService {
-  private readonly apiUrl = 'http://localhost:5011/api/comments';
+  private readonly apiUrl = 'https://flowboard-backend-48oe.onrender.com/api/comments';
 
   constructor(private http: HttpClient) {}
 

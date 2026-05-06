@@ -33,7 +33,7 @@ export interface UpdateBoardRequest {
 
 @Injectable({ providedIn: 'root' })
 export class BoardService {
-  private readonly apiUrl = 'http://localhost:5011/api/boards';
+  private readonly apiUrl = 'https://flowboard-backend-48oe.onrender.com/api/boards';
 
   constructor(private http: HttpClient) {}
 

@@ -21,7 +21,7 @@ export interface UpdateMemberRoleRequest {
 
 @Injectable({ providedIn: 'root' })
 export class WorkspaceMemberService {
-  private readonly apiUrl = 'http://localhost:5011/api/workspaces';
+  private readonly apiUrl = 'https://flowboard-backend-48oe.onrender.com/api/workspaces';
 
   constructor(private http: HttpClient) {}
 

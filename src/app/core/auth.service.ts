@@ -27,7 +27,7 @@ export interface AuthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly apiUrl = 'http://localhost:5011/api/auth';
+  private readonly apiUrl = 'https://flowboard-backend-48oe.onrender.com/api/auth';
   private readonly tokenKey = 'flowboard_token';
   private readonly userKey = 'flowboard_user';
 

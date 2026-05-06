@@ -27,7 +27,7 @@ export interface UpdateListRequest {
 
 @Injectable({ providedIn: 'root' })
 export class ListService {
-  private readonly apiUrl = 'http://localhost:5011/api/lists';
+  private readonly apiUrl = 'https://flowboard-backend-48oe.onrender.com/api/lists';
 
   constructor(private http: HttpClient) {}
 
