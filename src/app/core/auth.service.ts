@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
@@ -27,7 +27,7 @@ export interface AuthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly apiUrl = 'https://flowboard-backend-48oe.onrender.com/api/auth';
+  private readonly apiUrl = 'https://flowboard-backend-nehc.onrender.com/api/auth';
   private readonly tokenKey = 'flowboard_token';
   private readonly userKey = 'flowboard_user';
 
@@ -80,3 +80,4 @@ export class AuthService {
     localStorage.setItem(this.userKey, JSON.stringify(response));
   }
 }
+

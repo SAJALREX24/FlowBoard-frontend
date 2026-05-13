@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
@@ -24,7 +24,7 @@ export interface UpdateChecklistItemRequest {
 
 @Injectable({ providedIn: 'root' })
 export class ChecklistService {
-  private readonly apiUrl = 'https://flowboard-backend-48oe.onrender.com/api/labels/checklist-items';
+  private readonly apiUrl = 'https://flowboard-backend-nehc.onrender.com/api/labels/checklist-items';
 
   constructor(private http: HttpClient) {}
 
@@ -52,3 +52,4 @@ export class ChecklistService {
     );
   }
 }
+

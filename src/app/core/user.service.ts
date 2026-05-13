@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
@@ -12,7 +12,7 @@ export interface UserSummary {
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  private readonly apiUrl = 'https://flowboard-backend-48oe.onrender.com/api/auth';
+  private readonly apiUrl = 'https://flowboard-backend-nehc.onrender.com/api/auth';
 
   constructor(private http: HttpClient) {}
 
@@ -38,3 +38,4 @@ export class UserService {
     }
   }
 }
+

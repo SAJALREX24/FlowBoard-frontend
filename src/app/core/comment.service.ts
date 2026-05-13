@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
@@ -26,7 +26,7 @@ export interface UpdateCommentRequest {
 
 @Injectable({ providedIn: 'root' })
 export class CommentService {
-  private readonly apiUrl = 'https://flowboard-backend-48oe.onrender.com/api/comments';
+  private readonly apiUrl = 'https://flowboard-backend-nehc.onrender.com/api/comments';
 
   constructor(private http: HttpClient) {}
 
@@ -60,3 +60,4 @@ export class CommentService {
     );
   }
 }
+
