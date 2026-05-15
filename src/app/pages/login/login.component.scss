@@ -1,3 +1,47 @@
 :host {
   display: block;
 }
+
+/* Mini-card gentle hover/breathe */
+.mini-card {
+  transition: transform 400ms ease, box-shadow 400ms ease;
+  animation: cardBreath 6s ease-in-out infinite;
+}
+.mini-card-1 { animation-delay: 0s; }
+.mini-card-2 { animation-delay: -1.5s; }
+.mini-card-3 { animation-delay: -3s; }
+.mini-card-4 { animation-delay: -4.5s; }
+.mini-card-5 { animation-delay: -2s; }
+
+@keyframes cardBreath {
+  0%, 100% { transform: translateY(0); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+  50%      { transform: translateY(-3px); box-shadow: 0 8px 16px -4px rgba(0,0,0,0.4); }
+}
+
+/* The signature "ghost" card that travels from To Do → In Progress → Done */
+.ghost-card {
+  left: 18px;
+  animation: travel 8s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes travel {
+  0%   { left: 18px;  top: 58px; transform: rotate(-3deg) scale(1);    opacity: 0; }
+  8%   { left: 18px;  top: 58px; transform: rotate(-3deg) scale(1);    opacity: 1; }
+  30%  { left: 18px;  top: 58px; transform: rotate(-3deg) scale(1);    opacity: 1; }
+  45%  { left: 38%;   top: 50px; transform: rotate(2deg)  scale(1.06); opacity: 1; }
+  60%  { left: 38%;   top: 50px; transform: rotate(2deg)  scale(1);    opacity: 1; }
+  78%  { left: 70%;   top: 58px; transform: rotate(-2deg) scale(1);    opacity: 1; }
+  92%  { left: 70%;   top: 58px; transform: rotate(-2deg) scale(1);    opacity: 1; }
+  100% { left: 70%;   top: 58px; transform: rotate(-2deg) scale(0.98); opacity: 0; }
+}
+
+/* Theme-aware ghost card colors (light theme) */
+:host-context(body.light-theme) .ghost-card {
+  background-color: rgba(255,255,255,0.95) !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 8px 24px -6px rgba(59,130,246,0.45) !important;
+}
+:host-context(body.light-theme) .ghost-card .bg-emerald-500 {
+  background-color: #3b82f6 !important;
+}

@@ -1,57 +1,186 @@
-<div class="min-h-screen flex items-center justify-center bg-zinc-950 px-4 relative overflow-hidden">
+<div class="min-h-screen flex bg-zinc-950 relative overflow-hidden">
+  <!-- Floating theme toggle -->
+  <div class="absolute top-4 right-4 z-30">
+    <app-theme-toggle></app-theme-toggle>
+  </div>
+
   <!-- Ambient gradient layers -->
   <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(16,185,129,0.12),transparent_70%)]"></div>
   <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_40%_40%_at_85%_100%,rgba(20,184,166,0.08),transparent_60%)]"></div>
   <div class="absolute inset-0 -z-10 opacity-[0.03] bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,1)_1px,transparent_0)] bg-[length:24px_24px]"></div>
-  <div class="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl p-8">
-    <div class="text-center mb-8">
-      <h1 class="text-4xl font-bold text-emerald-500/90 tracking-tight">FlowBoard</h1>
-      <p class="text-zinc-300 mt-2 text-sm">Organize work. Collaborate seamlessly.</p>
-      <p class="text-zinc-500 mt-4 text-xs">Sign in to your workspace</p>
+
+  <!-- ===== LEFT: hero / illustration ===== -->
+  <div class="hidden lg:flex flex-1 items-center justify-center px-12 py-12 relative">
+    <div class="max-w-xl w-full space-y-8 relative z-10">
+
+      <!-- Logo lockup -->
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-900/40">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="6" height="16" rx="1.5"/>
+            <rect x="13" y="4" width="6" height="10" rx="1.5"/>
+          </svg>
+        </div>
+        <span class="text-3xl font-bold text-emerald-500/90 tracking-tight">FlowBoard</span>
+      </div>
+
+      <!-- Hero copy -->
+      <div>
+        <h1 class="text-5xl xl:text-6xl font-bold text-zinc-100 leading-tight tracking-tight">
+          Get more done<br/>
+          <span class="text-emerald-500/90">with FlowBoard.</span>
+        </h1>
+        <p class="text-lg text-zinc-400 mt-5 leading-relaxed">
+          The visual way to organize tasks, projects, and teamwork — beautifully.
+        </p>
+      </div>
+
+      <!-- Animated mini-kanban board -->
+      <div class="relative">
+        <div class="grid grid-cols-3 gap-3 p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 shadow-2xl backdrop-blur-md">
+          <!-- Column 1 -->
+          <div class="space-y-2">
+            <div class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider px-2">To Do</div>
+            <div class="mini-card mini-card-1 bg-zinc-800 border border-zinc-700 rounded-md p-2.5">
+              <div class="h-1 w-10 rounded bg-sky-500 mb-2"></div>
+              <div class="h-1.5 w-full bg-zinc-700 rounded mb-1"></div>
+              <div class="h-1.5 w-3/4 bg-zinc-700 rounded"></div>
+              <div class="flex items-center gap-1 mt-2">
+                <span class="text-[8px] px-1.5 py-0.5 rounded-full bg-rose-950 text-rose-300 border border-rose-800">URGENT</span>
+              </div>
+            </div>
+            <div class="mini-card mini-card-2 bg-zinc-800 border border-zinc-700 rounded-md p-2.5">
+              <div class="h-1.5 w-full bg-zinc-700 rounded mb-1"></div>
+              <div class="h-1.5 w-2/3 bg-zinc-700 rounded"></div>
+            </div>
+          </div>
+
+          <!-- Column 2 -->
+          <div class="space-y-2">
+            <div class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider px-2">In Progress</div>
+            <div class="mini-card mini-card-3 bg-zinc-800 border border-zinc-700 rounded-md p-2.5">
+              <div class="h-1 w-10 rounded bg-violet-500 mb-2"></div>
+              <div class="h-1.5 w-full bg-zinc-700 rounded mb-1"></div>
+              <div class="h-1.5 w-1/2 bg-zinc-700 rounded"></div>
+              <div class="flex items-center gap-1 mt-2">
+                <span class="w-4 h-4 rounded-full bg-gradient-to-br from-amber-500 to-rose-500 border border-zinc-900"></span>
+                <span class="w-4 h-4 rounded-full bg-gradient-to-br from-cyan-500 to-indigo-500 -ml-1.5 border border-zinc-900"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 3 -->
+          <div class="space-y-2">
+            <div class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider px-2">Done</div>
+            <div class="mini-card mini-card-4 bg-zinc-800 border border-zinc-700 rounded-md p-2.5">
+              <div class="h-1 w-10 rounded bg-emerald-500 mb-2"></div>
+              <div class="h-1.5 w-full bg-zinc-700 rounded mb-1"></div>
+              <div class="h-1.5 w-3/4 bg-zinc-700 rounded"></div>
+              <div class="flex items-center gap-1 mt-2">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgb(52,211,153)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                <div class="h-1 w-6 bg-emerald-700 rounded"></div>
+              </div>
+            </div>
+            <div class="mini-card mini-card-5 bg-zinc-800 border border-zinc-700 rounded-md p-2.5">
+              <div class="h-1.5 w-full bg-zinc-700 rounded mb-1"></div>
+              <div class="h-1.5 w-2/3 bg-zinc-700 rounded"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating "ghost" card that animates between columns -->
+        <div class="ghost-card absolute top-[58px] w-[28%] bg-zinc-800/95 border-2 border-emerald-500 rounded-md p-2.5 shadow-2xl shadow-emerald-900/40 pointer-events-none">
+          <div class="h-1 w-10 rounded bg-emerald-500 mb-2"></div>
+          <div class="h-1.5 w-full bg-zinc-600 rounded mb-1"></div>
+          <div class="h-1.5 w-3/4 bg-zinc-600 rounded"></div>
+        </div>
+      </div>
+
+      <!-- Feature bullets -->
+      <div class="grid grid-cols-3 gap-4 pt-2">
+        <div class="flex flex-col items-start gap-2">
+          <div class="w-9 h-9 rounded-lg bg-emerald-950/60 border border-emerald-800 flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgb(52,211,153)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12l3 3 5-6"/></svg>
+          </div>
+          <p class="text-sm font-semibold text-zinc-200">Track tasks</p>
+          <p class="text-xs text-zinc-500 leading-snug">Drag, drop, done.</p>
+        </div>
+        <div class="flex flex-col items-start gap-2">
+          <div class="w-9 h-9 rounded-lg bg-emerald-950/60 border border-emerald-800 flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgb(52,211,153)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5"/><path d="M14 18c0-2 1.5-3.5 3.5-3.5S21 16 21 18"/></svg>
+          </div>
+          <p class="text-sm font-semibold text-zinc-200">Collaborate</p>
+          <p class="text-xs text-zinc-500 leading-snug">Real-time teamwork.</p>
+        </div>
+        <div class="flex flex-col items-start gap-2">
+          <div class="w-9 h-9 rounded-lg bg-emerald-950/60 border border-emerald-800 flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgb(52,211,153)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+          </div>
+          <p class="text-sm font-semibold text-zinc-200">Move fast</p>
+          <p class="text-xs text-zinc-500 leading-snug">Built for speed.</p>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <form (submit)="onSubmit(); $event.preventDefault()" class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-zinc-300 mb-1">Email</label>
-        <input
-          type="email"
-          [(ngModel)]="email"
-          name="email"
+  <!-- ===== RIGHT: login form ===== -->
+  <div class="flex-1 flex items-center justify-center px-4 py-8 relative">
+    <div class="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl p-8 relative">
+      <!-- subtle glow behind card -->
+      <div class="absolute inset-0 -z-10 rounded-2xl blur-2xl bg-emerald-500/10"></div>
+
+      <div class="text-center mb-8 lg:hidden">
+        <h1 class="text-4xl font-bold text-emerald-500/90 tracking-tight">FlowBoard</h1>
+        <p class="text-zinc-300 mt-2 text-sm">Organize work. Collaborate seamlessly.</p>
+      </div>
+      <div class="text-center mb-8 hidden lg:block">
+        <h2 class="text-2xl font-bold text-zinc-100 tracking-tight">Welcome back</h2>
+        <p class="text-zinc-400 mt-2 text-sm">Sign in to your workspace</p>
+      </div>
+
+      <form (submit)="onSubmit(); $event.preventDefault()" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-zinc-300 mb-1">Email</label>
+          <input
+            type="email"
+            [(ngModel)]="email"
+            name="email"
+            [disabled]="isLoading"
+            placeholder="you@example.com"
+            class="w-full bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder-zinc-500 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-zinc-300 mb-1">Password</label>
+          <input
+            type="password"
+            [(ngModel)]="password"
+            name="password"
+            [disabled]="isLoading"
+            placeholder="••••••••"
+            class="w-full bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder-zinc-500 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+          />
+        </div>
+
+        <div *ngIf="errorMessage" class="bg-red-950/50 border border-red-800 text-red-300 px-4 py-2 rounded-lg text-sm">
+          {{ errorMessage }}
+        </div>
+
+        <button
+          type="submit"
           [disabled]="isLoading"
-          placeholder="you@example.com"
-          class="w-full bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder-zinc-500 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-        />
-      </div>
+          class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed"
+        >
+          <span *ngIf="!isLoading">Sign In</span>
+          <span *ngIf="isLoading">Signing in...</span>
+        </button>
+      </form>
 
-      <div>
-        <label class="block text-sm font-medium text-zinc-300 mb-1">Password</label>
-        <input
-          type="password"
-          [(ngModel)]="password"
-          name="password"
-          [disabled]="isLoading"
-          placeholder="••••••••"
-          class="w-full bg-zinc-800 border border-zinc-700 text-zinc-100 placeholder-zinc-500 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-        />
-      </div>
-
-      <div *ngIf="errorMessage" class="bg-red-950/50 border border-red-800 text-red-300 px-4 py-2 rounded-lg text-sm">
-        {{ errorMessage }}
-      </div>
-
-      <button
-        type="submit"
-        [disabled]="isLoading"
-        class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition disabled:bg-zinc-700 disabled:text-zinc-500 disabled:cursor-not-allowed"
-      >
-        <span *ngIf="!isLoading">Sign In</span>
-        <span *ngIf="isLoading">Signing in...</span>
-      </button>
-    </form>
-
-    <p class="text-center text-sm text-zinc-400 mt-6">
-      Don't have an account?
-      <a routerLink="/register" class="text-emerald-400 hover:text-emerald-300 font-medium">Sign up</a>
-    </p>
+      <p class="text-center text-sm text-zinc-400 mt-6">
+        Don't have an account?
+        <a routerLink="/register" class="text-emerald-400 hover:text-emerald-300 font-medium">Sign up</a>
+      </p>
+    </div>
   </div>
 </div>

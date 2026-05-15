@@ -11,6 +11,7 @@ import { CardService, Card, CreateCardRequest, MoveCardRequest } from '../../cor
 import { BoardMemberService, BoardMember } from '../../core/board-member.service';
 import { UserService, UserSummary } from '../../core/user.service';
 import { CardModalComponent } from '../../components/card-modal/card-modal.component';
+import { ThemeToggleComponent } from '../../components/theme-toggle/theme-toggle.component';
 
 interface ListWithCards {
   list: BoardList;
@@ -25,7 +26,7 @@ interface MemberWithUser {
 @Component({
   selector: 'app-board-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, DragDropModule, CardModalComponent],
+  imports: [CommonModule, FormsModule, DragDropModule, CardModalComponent, ThemeToggleComponent],
   templateUrl: './board-view.component.html',
   styleUrl: './board-view.component.scss'
 })

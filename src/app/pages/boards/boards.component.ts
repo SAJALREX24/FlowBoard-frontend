@@ -7,6 +7,7 @@ import { WorkspaceService, Workspace } from '../../core/workspace.service';
 import { BoardService, Board, CreateBoardRequest } from '../../core/board.service';
 import { WorkspaceMemberService, WorkspaceMember } from '../../core/workspace-member.service';
 import { UserService, UserSummary } from '../../core/user.service';
+import { ThemeToggleComponent } from '../../components/theme-toggle/theme-toggle.component';
 
 interface MemberWithUser {
   member: WorkspaceMember;
@@ -16,7 +17,7 @@ interface MemberWithUser {
 @Component({
   selector: 'app-boards',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ThemeToggleComponent],
   templateUrl: './boards.component.html',
   styleUrl: './boards.component.scss'
 })

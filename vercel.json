@@ -1,8 +1,9 @@
 {
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/flowboard-ui/browser",
+  "framework": null,
+  "installCommand": "npm install",
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

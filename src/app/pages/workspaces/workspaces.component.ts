@@ -4,11 +4,12 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { WorkspaceService, Workspace, CreateWorkspaceRequest } from '../../core/workspace.service';
 import { FormsModule } from '@angular/forms';
+import { ThemeToggleComponent } from '../../components/theme-toggle/theme-toggle.component';
 
 @Component({
   selector: 'app-workspaces',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, ThemeToggleComponent],
   templateUrl: './workspaces.component.html',
   styleUrl: './workspaces.component.scss'
 })

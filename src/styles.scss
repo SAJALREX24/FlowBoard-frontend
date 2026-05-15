@@ -3,14 +3,410 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   GLOBAL THEME VARIABLES & DEFAULTS
+   ============================================================ */
 html, body {
-  background-color: #09090b; /* zinc-950 */
-  color: #f4f4f5; /* zinc-100 */
   min-height: 100vh;
+  transition: background-color 0.35s ease, color 0.35s ease;
+  position: relative;
 }
 
-/* Custom scrollbar (subtle, dark) */
+body { overflow-x: hidden; }
+
+/* Default = Dark theme — Trello-inspired deep blue/teal/purple mesh */
+html, body {
+  color: #f4f4f5;
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 0%,   rgba(14, 165, 233, 0.30), transparent 60%),
+    radial-gradient(ellipse 60% 45% at 90% 20%,  rgba(99, 102, 241, 0.30), transparent 65%),
+    radial-gradient(ellipse 70% 50% at 80% 100%, rgba(139, 92, 246, 0.25), transparent 65%),
+    radial-gradient(ellipse 60% 45% at 0% 80%,   rgba(20, 184, 166, 0.22), transparent 65%),
+    linear-gradient(180deg, #0a1325 0%, #0c1730 40%, #0a1428 80%, #0b1530 100%);
+  background-attachment: fixed;
+}
+
+/* Subtle dot-grid pattern overlay (Trello-style texture) */
+html::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 0);
+  background-size: 28px 28px;
+}
+
+/* Floating decorative orbs — dark mode default */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.45;
+  animation: float 18s ease-in-out infinite;
+}
+body::before {
+  top: -140px;
+  left: -140px;
+  width: 460px;
+  height: 460px;
+  background: radial-gradient(circle, #0ea5e9, transparent 70%);
+}
+body::after {
+  bottom: -180px;
+  right: -180px;
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(circle, #8b5cf6, transparent 70%);
+  animation-delay: -9s;
+}
+@keyframes float {
+  0%,100% { transform: translate(0,0) scale(1); }
+  50%     { transform: translate(40px,30px) scale(1.08); }
+}
+
+/* Ensure app content sits above orbs */
+app-root { position: relative; z-index: 1; display: block; }
+
+/* Smooth transitions for theme switching across common surfaces */
+* {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 250ms;
+  transition-timing-function: ease;
+}
+
+/* Custom scrollbar - dark default */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: #18181b; }
-::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 5px; }
-::-webkit-scrollbar-thumb:hover { background: #52525b; }
+::-webkit-scrollbar-track { background: rgba(24,24,27,0.4); }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#3f3f46,#27272a); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg,#52525b,#3f3f46); }
+
+/* ============================================================
+   DARK THEME — global polish (glassmorphism, gradient buttons)
+   ============================================================ */
+body:not(.light-theme) {
+  /* Page wrappers become transparent so the body mesh shows */
+  .bg-zinc-950 { background-color: transparent !important; }
+
+  /* Headers + cards = frosted glass */
+  header.bg-zinc-900,
+  .bg-zinc-900 {
+    background-color: rgba(15, 23, 42, 0.78) !important;
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+  .bg-zinc-900\/80 {
+    background-color: rgba(15, 23, 42, 0.7) !important;
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+  }
+  .bg-zinc-900\/50 {
+    background-color: rgba(15, 23, 42, 0.5) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* Inputs — subtle inset */
+  .bg-zinc-800 {
+    background-color: rgba(30, 41, 59, 0.85) !important;
+  }
+  .bg-zinc-800\/50 {
+    background-color: rgba(30, 41, 59, 0.55) !important;
+  }
+
+  /* Trello-blue gradient primary buttons */
+  .bg-emerald-600 {
+    background-image: linear-gradient(135deg, #0ea5e9 0%, #6366f1 50%, #8b5cf6 100%) !important;
+    background-color: transparent !important;
+    box-shadow: 0 4px 14px -2px rgba(14, 165, 233, 0.45);
+    color: #ffffff !important;
+  }
+  .hover\:bg-emerald-500:hover {
+    background-image: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #a78bfa 100%) !important;
+    background-color: transparent !important;
+    box-shadow: 0 8px 24px -2px rgba(14, 165, 233, 0.6);
+  }
+
+  /* Brand text — Trello-style blue gradient */
+  .text-emerald-500\/90 {
+    background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent !important;
+  }
+
+  /* Emerald accent links → cyan for cohesion */
+  .text-emerald-400 { color: #38bdf8 !important; }
+  .hover\:text-emerald-300:hover,
+  .hover\:text-emerald-400:hover { color: #7dd3fc !important; }
+
+  /* Card lift on hover */
+  .cursor-pointer:hover {
+    box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.25), 0 4px 12px -4px rgba(0,0,0,0.4);
+  }
+
+  /* Modal backdrop with stronger blur */
+  .bg-black\/70 {
+    background-color: rgba(0,0,0,0.55) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* ============================================================
+   LIGHT THEME — Blue / White
+   Overrides Tailwind utility classes when body has .light-theme.
+   Templates stay unchanged; the same classes look bright & blue.
+   ============================================================ */
+body.light-theme {
+  color: #0f172a !important;
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 0%,   rgba(56, 189, 248, 0.55), transparent 60%),
+    radial-gradient(ellipse 60% 45% at 90% 20%,  rgba(99, 102, 241, 0.35), transparent 65%),
+    radial-gradient(ellipse 70% 50% at 80% 100%, rgba(167, 139, 250, 0.40), transparent 65%),
+    radial-gradient(ellipse 60% 45% at 0% 80%,   rgba(94, 234, 212, 0.35), transparent 65%),
+    linear-gradient(180deg, #dbeafe 0%, #e0f2fe 40%, #e0e7ff 80%, #ede9fe 100%) !important;
+  background-attachment: fixed !important;
+}
+
+/* Light-mode dot pattern (slightly visible) */
+body.light-theme + html::before,
+html:has(body.light-theme)::before {
+  background-image: radial-gradient(circle at 1px 1px, rgba(30,58,138,0.08) 1px, transparent 0) !important;
+}
+
+/* Light-mode floating orbs */
+body.light-theme::before {
+  background: radial-gradient(circle, #38bdf8, transparent 70%) !important;
+  opacity: 0.55 !important;
+}
+body.light-theme::after {
+  background: radial-gradient(circle, #a78bfa, transparent 70%) !important;
+  opacity: 0.5 !important;
+}
+
+body.light-theme {
+  /* Scrollbar */
+  ::-webkit-scrollbar-track { background: rgba(224,236,255,0.5); }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#93c5fd,#60a5fa); border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg,#60a5fa,#3b82f6); }
+
+  /* ---------- Backgrounds (glass over mesh gradient) ---------- */
+  .bg-zinc-950 { background-color: transparent !important; }   /* page = let body mesh show */
+  .bg-zinc-900 {
+    background-color: rgba(255, 255, 255, 0.72) !important;
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+  }
+  .bg-zinc-900\/80 {
+    background-color: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+  }
+  .bg-zinc-900\/50 {
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .bg-zinc-800 { background-color: rgba(219, 234, 254, 0.7) !important; }
+  .bg-zinc-800\/50 { background-color: rgba(219, 234, 254, 0.5) !important; }
+  .bg-zinc-700 { background-color: rgba(191, 219, 254, 0.85) !important; }
+
+  .hover\:bg-zinc-900:hover { background-color: #ffffff !important; }
+  .hover\:bg-zinc-800:hover { background-color: #dbeafe !important; }
+  .hover\:bg-zinc-800\/50:hover { background-color: rgba(219,234,254,0.5) !important; }
+  .hover\:bg-zinc-700:hover { background-color: #bfdbfe !important; }
+
+  /* ---------- Borders ---------- */
+  .border-zinc-800 { border-color: #bfdbfe !important; }
+  .border-zinc-700 { border-color: #93c5fd !important; }
+  .border-zinc-600 { border-color: #60a5fa !important; }
+  .hover\:border-zinc-700:hover { border-color: #60a5fa !important; }
+  .hover\:border-zinc-600:hover { border-color: #3b82f6 !important; }
+  .border-l-4 { /* keep accent visible */ }
+
+  /* ---------- Text colors ---------- */
+  .text-zinc-100 { color: #0f172a !important; }
+  .text-zinc-200 { color: #1e293b !important; }
+  .text-zinc-300 { color: #1e3a8a !important; }
+  .text-zinc-400 { color: #2563eb !important; }
+  .text-zinc-500 { color: #3b82f6 !important; }
+  .text-zinc-600 { color: #60a5fa !important; }
+  .hover\:text-zinc-100:hover { color: #0f172a !important; }
+  .hover\:text-zinc-200:hover { color: #1e293b !important; }
+  .hover\:text-zinc-300:hover { color: #1e3a8a !important; }
+
+  /* Placeholder text */
+  .placeholder-zinc-500::placeholder { color: #93c5fd !important; }
+
+  /* ---------- Emerald (brand) → vibrant Blue ---------- */
+  .text-emerald-400 { color: #2563eb !important; }
+  .hover\:text-emerald-300:hover,
+  .hover\:text-emerald-400:hover { color: #1d4ed8 !important; }
+  .text-emerald-300 { color: #1d4ed8 !important; }
+
+  /* Brand title — gradient blue */
+  .text-emerald-500\/90 {
+    background: linear-gradient(135deg, #2563eb 0%, #6366f1 50%, #8b5cf6 100%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
+  }
+
+  /* Primary gradient buttons */
+  .bg-emerald-600 {
+    background-image: linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%) !important;
+    background-color: transparent !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px -2px rgba(59, 130, 246, 0.4) !important;
+  }
+  .hover\:bg-emerald-500:hover {
+    background-image: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%) !important;
+    background-color: transparent !important;
+    box-shadow: 0 8px 22px -3px rgba(59, 130, 246, 0.55) !important;
+  }
+  .bg-emerald-500 { background-color: #3b82f6 !important; }
+
+  .border-emerald-500 { border-color: #2563eb !important; }
+  .focus\:ring-emerald-500:focus { --tw-ring-color: #2563eb !important; }
+  .focus\:border-emerald-500:focus { border-color: #2563eb !important; }
+  .ring-emerald-500 { --tw-ring-color: #2563eb !important; }
+
+  .bg-emerald-950,
+  .bg-emerald-950\/50 { background-color: #dbeafe !important; }
+  .border-emerald-800 { border-color: #93c5fd !important; }
+
+  .accent-emerald-500 { accent-color: #2563eb !important; }
+
+  /* ---------- Red (errors / delete) - softened for light ---------- */
+  .bg-red-950\/50 { background-color: #fee2e2 !important; }
+  .border-red-800 { border-color: #fca5a5 !important; }
+  .text-red-300,
+  .text-red-400 { color: #dc2626 !important; }
+  .hover\:text-red-300:hover { color: #b91c1c !important; }
+  .hover\:bg-red-950\/50:hover { background-color: #fee2e2 !important; }
+
+  /* ---------- Disabled states ---------- */
+  .disabled\:bg-zinc-700:disabled { background-color: #cbd5e1 !important; }
+  .disabled\:text-zinc-500:disabled { color: #94a3b8 !important; }
+
+  /* ---------- Shadows ---------- */
+  .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(37, 99, 235, 0.25) !important; }
+  .shadow-lg  { box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.15) !important; }
+  .shadow-md  { box-shadow: 0 4px 10px -2px rgba(37, 99, 235, 0.12) !important; }
+  .shadow-sm  { box-shadow: 0 1px 3px 0 rgba(37, 99, 235, 0.10) !important; }
+  .hover\:shadow-xl:hover { box-shadow: 0 20px 30px -8px rgba(37, 99, 235, 0.25) !important; }
+  .hover\:shadow-lg:hover { box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.20) !important; }
+  .hover\:shadow-black\/40:hover { box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.25) !important; }
+  .hover\:shadow-emerald-900\/20:hover { box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.25) !important; }
+
+  /* ---------- Backdrop on modals (lighter overlay) ---------- */
+  .bg-black\/70 { background-color: rgba(30, 58, 138, 0.35) !important; }
+
+  /* ---------- Ambient gradient backgrounds on auth pages ---------- */
+  .bg-\[radial-gradient\(ellipse_60\%_50\%_at_50\%_0\%\,rgba\(16\,185\,129\,0\.12\)\,transparent_70\%\)\] {
+    background-image: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(59, 130, 246, 0.18), transparent 70%) !important;
+  }
+  .bg-\[radial-gradient\(ellipse_40\%_40\%_at_85\%_100\%\,rgba\(20\,184\,166\,0\.08\)\,transparent_60\%\)\] {
+    background-image: radial-gradient(ellipse 40% 40% at 85% 100%, rgba(96, 165, 250, 0.15), transparent 60%) !important;
+  }
+  .bg-\[radial-gradient\(circle_at_1px_1px\,rgba\(255\,255\,255\,1\)_1px\,transparent_0\)\] {
+    background-image: radial-gradient(circle at 1px 1px, rgba(30, 58, 138, 1) 1px, transparent 0) !important;
+  }
+
+  /* ---------- Priority pill backgrounds (dark→light remap) ---------- */
+  .bg-sky-950 { background-color: #e0f2fe !important; }
+  .text-sky-300 { color: #0369a1 !important; }
+  .border-sky-800 { border-color: #7dd3fc !important; }
+
+  .bg-amber-950 { background-color: #fef3c7 !important; }
+  .text-amber-300 { color: #b45309 !important; }
+  .border-amber-800 { border-color: #fcd34d !important; }
+
+  .bg-orange-950 { background-color: #ffedd5 !important; }
+  .text-orange-300 { color: #c2410c !important; }
+  .border-orange-800 { border-color: #fdba74 !important; }
+
+  .bg-red-950 { background-color: #fee2e2 !important; }
+
+  /* ---------- Theme toggle button in light mode ---------- */
+  .theme-toggle {
+    background-color: #ffffff !important;
+    border-color: #bfdbfe !important;
+    color: #1e3a8a !important;
+  }
+  .theme-toggle:hover {
+    background-color: #dbeafe !important;
+    border-color: #60a5fa !important;
+  }
+}
+
+/* ============================================================
+   TRELLO-STYLE BOARD ACCENT BANDS
+   The board-view page has an absolute-positioned colored band at top
+   spanning full width with a gradient. Make these more vivid.
+   ============================================================ */
+.from-sky-500\/20     { --tw-gradient-from: rgba(14, 165, 233, 0.55) !important; }
+.via-sky-500\/10      { --tw-gradient-via:  rgba(14, 165, 233, 0.30) !important; }
+.from-emerald-500\/20 { --tw-gradient-from: rgba(16, 185, 129, 0.55) !important; }
+.via-emerald-500\/10  { --tw-gradient-via:  rgba(16, 185, 129, 0.30) !important; }
+.from-violet-500\/20  { --tw-gradient-from: rgba(139, 92, 246, 0.55) !important; }
+.via-violet-500\/10   { --tw-gradient-via:  rgba(139, 92, 246, 0.30) !important; }
+.from-amber-500\/20   { --tw-gradient-from: rgba(245, 158, 11, 0.55) !important; }
+.via-amber-500\/10    { --tw-gradient-via:  rgba(245, 158, 11, 0.30) !important; }
+.from-rose-500\/20    { --tw-gradient-from: rgba(244, 63, 94, 0.55) !important; }
+.via-rose-500\/10     { --tw-gradient-via:  rgba(244, 63, 94, 0.30) !important; }
+.from-zinc-500\/20    { --tw-gradient-from: rgba(113, 113, 122, 0.55) !important; }
+.via-zinc-500\/10     { --tw-gradient-via:  rgba(113, 113, 122, 0.30) !important; }
+
+/* ============================================================
+   VIBRANT BOARD THUMBNAILS — applies in both themes
+   Gradient backgrounds for board card tiles
+   ============================================================ */
+.bg-sky-600    { background-image: linear-gradient(135deg, #0ea5e9, #3b82f6) !important; }
+.bg-emerald-600 { background-image: linear-gradient(135deg, #10b981, #14b8a6); }
+.bg-violet-600 { background-image: linear-gradient(135deg, #8b5cf6, #a855f7) !important; }
+.bg-amber-600  { background-image: linear-gradient(135deg, #f59e0b, #f97316) !important; }
+.bg-rose-600   { background-image: linear-gradient(135deg, #f43f5e, #ec4899) !important; }
+.bg-pink-600   { background-image: linear-gradient(135deg, #ec4899, #f43f5e) !important; }
+.bg-yellow-600 { background-image: linear-gradient(135deg, #eab308, #f59e0b) !important; }
+.bg-teal-600   { background-image: linear-gradient(135deg, #14b8a6, #06b6d4) !important; }
+.bg-cyan-600   { background-image: linear-gradient(135deg, #06b6d4, #0ea5e9) !important; }
+.bg-indigo-600 { background-image: linear-gradient(135deg, #6366f1, #8b5cf6) !important; }
+.bg-fuchsia-600 { background-image: linear-gradient(135deg, #d946ef, #c026d3) !important; }
+
+/* ============================================================
+   UI POLISH — applies in both themes
+   ============================================================ */
+
+/* Animated brand title shimmer */
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+.text-emerald-500\/90 {
+  background-size: 200% 200% !important;
+  animation: shimmer 6s ease-in-out infinite;
+}
+
+/* Smoother button presses */
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Nicer focus rings */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+}
+
+/* Card hover lift refinement */
+.cursor-pointer {
+  transition: transform 200ms ease, box-shadow 200ms ease, background-color 200ms ease, border-color 200ms ease;
+}
